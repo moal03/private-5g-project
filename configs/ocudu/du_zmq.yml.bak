@@ -1,0 +1,47 @@
+# OCUDU DU configuration for Phase 4 integration with Open5GS
+# Software-radio (ZeroMQ) test setup, paired with the OCUDU CU.
+# Radio parameters match the standard srsRAN OCUDU ZeroMQ example:
+#   Band n3 (FDD 1800 MHz), 10 MHz, 15 kHz SCS, ARFCN 368500.
+
+gnb_id: 411
+gnb_id_bit_length: 22
+gnb_du_id: 0
+
+log:
+  filename: /tmp/ocudu-du.log
+  all_level: info
+
+f1ap:
+  addrs:
+    - 127.0.0.1
+  bind_addrs:
+    - 127.0.0.1
+  retry_connection: true
+
+f1u:
+  bind_port: 2152
+  peer_port: 2152
+  socket:
+    - bind_addr: 127.0.0.1
+      sst: 1
+      sd: 1
+
+cell_cfg:
+  pci: 1
+  band: 3
+  dl_arfcn: 368500
+  common_scs: 15
+  channel_bandwidth_MHz: 10
+  plmn: "99970"
+  tac: 1
+
+ru_sdr:
+  device_driver: zmq
+  device_args: tx_port=tcp://127.0.0.1:2000,rx_port=tcp://127.0.0.1:2001,base_srate=11.52e6
+  srate: 11.52
+
+pcap:
+  f1ap_enable: false
+  f1u_enable: false
+  mac_enable: false
+  rlc_enable: false

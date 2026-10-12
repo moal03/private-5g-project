@@ -1,0 +1,62 @@
+# OCUDU DU configuration for Phase 4 integration with Open5GS
+# Software-radio (ZeroMQ) test setup, paired with the OCUDU CU.
+# Cell parameters match OCUDU's official srsUE example config
+# (gnb_rf_b210_fdd_srsUE.yml), adapted for our PLMN and topology.
+
+gnb_id: 411
+gnb_id_bit_length: 22
+gnb_du_id: 0
+
+log:
+  filename: /tmp/ocudu-du.log
+  all_level: info
+
+f1ap:
+  addrs:
+    - 127.0.0.1
+  bind_addrs:
+    - 127.0.0.1
+  retry_connection: true
+
+f1u:
+  bind_port: 2152
+  peer_port: 2152
+  socket:
+    - bind_addr: 127.0.0.3
+      ext_addr: 127.0.0.3
+      sst: 1
+      sd: 1
+      five_qi: 9
+
+cell_cfg:
+  dl_arfcn: 368500
+  band: 3
+  channel_bandwidth_MHz: 20
+  common_scs: 15
+  plmn: "99970"
+  tac: 1
+  pci: 1
+  pdcch:
+    dedicated:
+      ss2_type: common
+      dci_format_0_1_and_1_1: false
+    common:
+      ss0_index: 0
+      coreset0_index: 12
+  prach:
+    prach_config_index: 1
+  pdsch:
+    mcs_table: qam64
+  pusch:
+    mcs_table: qam64
+
+ru_sdr:
+  device_driver: zmq
+  device_args: tx_port=tcp://127.0.0.1:2000,rx_port=tcp://127.0.0.1:2001,base_srate=23.04e6
+  srate: 23.04
+
+pcap:
+  f1ap_enable: false
+  f1u_enable: false
+  mac_enable: false
+  rlc_enable: false

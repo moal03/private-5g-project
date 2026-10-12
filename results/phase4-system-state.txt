@@ -1,0 +1,29 @@
+=== Phase 4 evidence ===
+Date: 2026-10-12T20:37:18Z
+
+=== Software versions ===
+OCUDU version: 26.10.0
+srsRAN 4G version: 25.10.0 (commit 6bcbd9e)
+Open5GS: Version: 2.8.0~resolute6
+
+=== Processes ===
+root      155379  0.0  0.0  15364  6084 pts/0    S    Oct12   0:00 sudo ./build/apps/cu/ocu -c /home/mohammad/projects/private-5g/configs/ocudu/cu_zmq.yml
+root      155382  0.0  0.0  15364  1532 pts/1    Ss+  Oct12   0:00 sudo ./build/apps/cu/ocu -c /home/mohammad/projects/private-5g/configs/ocudu/cu_zmq.yml
+root      155383  7.0 15.2 2762016 2380040 pts/1 Sl   Oct12   6:14 ./build/apps/cu/ocu -c /home/mohammad/projects/private-5g/configs/ocudu/cu_zmq.yml
+root      181562  0.0  0.0  15188  6384 pts/3    T    00:04   0:00 sudo ./build/apps/du/odu -c /home/mohammad/projects/private-5g/configs/ocudu/du_zmq.yml
+root      181633  0.0  0.0  15364  6652 pts/2    S    00:04   0:00 sudo ./build/apps/du/odu -c /home/mohammad/projects/private-5g/configs/ocudu/du_zmq.yml
+root      181636  0.0  0.0  15364  2288 pts/5    Ss+  00:04   0:00 sudo ./build/apps/du/odu -c /home/mohammad/projects/private-5g/configs/ocudu/du_zmq.yml
+root      181637  144 16.2 3740132 2538932 pts/5 Sl   00:04   3:25 ./build/apps/du/odu -c /home/mohammad/projects/private-5g/configs/ocudu/du_zmq.yml
+root      181706  0.0  0.0  15360  6740 pts/3    S+   00:05   0:00 sudo ./srsue /home/mohammad/projects/private-5g/configs/ocudu/ue_zmq.conf
+mohammad  181707  0.0  0.0  17652  7776 pts/3    S+   00:05   0:00 tee /tmp/srsue-run.log
+root      181709  0.0  0.0  15360  2328 pts/6    Ss   00:05   0:00 sudo ./srsue /home/mohammad/projects/private-5g/configs/ocudu/ue_zmq.conf
+root      181710 40.2  5.3 1690220 836496 pts/6  SLl+ 00:05   0:45 ./srsue /home/mohammad/projects/private-5g/configs/ocudu/ue_zmq.conf
+
+=== Sockets ===
+LISTEN 0      100        127.0.0.1:2000       0.0.0.0:*    users:(("odu",pid=181637,fd=14))         
+LISTEN 0      100        127.0.0.1:2001       0.0.0.0:*    users:(("srsue",pid=181710,fd=10))       
+
+=== UE namespace ===
+ue1
+tun_srsue        UNKNOWN        10.45.0.4/24 
+10.45.0.0/24 dev tun_srsue proto kernel scope link src 10.45.0.4 

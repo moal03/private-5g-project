@@ -1,0 +1,2325 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: https://ocudu.org/schemas/cu.schema.json
+title: OCUDU 5G CU configuration
+type: object
+properties:
+  log:
+    description: Logging configuration
+    type: object
+    properties:
+      filename:
+        description: Log file output path
+        type: string
+        default: /tmp/cu.log
+      all_level:
+        description: Default log level for PHY, MAC, RLC, PDCP, RRC, SDAP, NGAP and GTPU
+        type: string
+      lib_level:
+        description: Generic log level
+        type: string
+      e2ap_level:
+        description: E2AP log level
+        type: string
+      config_level:
+        description: Config log level
+        type: string
+      hex_max_size:
+        description: Maximum number of bytes to print in hex (zero for no hex dumps, -1 for unlimited bytes)
+        type: integer
+        minimum: -1
+        maximum: 1024
+        default: 0
+      flush_app_banner:
+        description: Flush the logger when writing the application start and stop banners (not applicable to du_low)
+        type: boolean
+        default: false
+      pdcp_level:
+        description: PDCP log level
+        type: string
+      rrc_level:
+        description: RRC log level
+        type: string
+      ngap_level:
+        description: NGAP log level
+        type: string
+      xnap_level:
+        description: XNAP log level
+        type: string
+      nrppa_level:
+        description: NRPPA log level
+        type: string
+      e1ap_level:
+        description: E1AP log level
+        type: string
+      f1ap_level:
+        description: F1AP log level
+        type: string
+      cu_level:
+        description: Log level for the CU
+        type: string
+      sec_level:
+        description: Security functions log level
+        type: string
+      e1ap_json_enabled:
+        description: Enable JSON logging of E1AP PDUs
+        type: boolean
+        default: false
+      f1ap_json_enabled:
+        description: Enable JSON logging of F1AP PDUs
+        type: boolean
+        default: false
+      sdap_level:
+        description: SDAP log level
+        type: string
+      gtpu_level:
+        description: GTPU log level
+        type: string
+      f1u_level:
+        description: F1-U log level
+        type: string
+      rohc_level:
+        description: ROHC log level
+        type: string
+    additionalProperties: false
+  trace:
+    description: General tracer configuration
+    type: object
+    properties:
+      filename:
+        description: Set to a valid file path to enable tracing and write the trace to the file
+        type: string
+        default: ""
+      max_tracing_events_per_file:
+        description: Maximum number of events per file. Set to zero for no limit
+        type: integer
+        default: 1000000
+      nof_tracing_events_before_severe:
+        description: Number of events to write prior to a severe event. Set to zero for writing all events
+        type: integer
+        default: 0
+      layers:
+        description: Metrics configuration
+        type: object
+        properties:
+          cu_up_enable:
+            description: Enable tracing for CU-UP executors
+            type: boolean
+            default: false
+        additionalProperties: false
+    additionalProperties: false
+  buffer_pool:
+    description: Buffer pool configuration
+    type: object
+    properties:
+      nof_segments:
+        description: Number of segments allocated by the buffer pool
+        type: integer
+        default: 1048576
+      segment_size:
+        description: Size of each buffer pool segment in bytes
+        type: integer
+        default: 2048
+    additionalProperties: false
+  metrics:
+    description: Metrics configuration
+    type: object
+    properties:
+      layers:
+        description: Layer basis metrics configuration
+        type: object
+        properties:
+          enable_app_usage:
+            description: Enable application usage metrics
+            type: boolean
+            default: false
+          enable_executor:
+            description: Whether to log application executors metrics
+            type: boolean
+            default: false
+          enable_ngap:
+            description: Enable NGAP metrics
+            type: boolean
+            default: false
+          enable_pdcp:
+            description: Enable PDCP metrics
+            type: boolean
+            default: false
+          enable_rrc:
+            description: Enable CU-CP RRC metrics
+            type: boolean
+            default: false
+          enable_e1ap:
+            description: Enable E1AP metrics
+            type: boolean
+            default: false
+          enable_nrup_cu:
+            description: Enable NRUP metrics (CU side)
+            type: boolean
+            default: false
+          skip_cu_up_executor:
+            description: Whether to skip logging CU-UP executor metrics when executor logging is enabled application wide
+            type: boolean
+            default: true
+        additionalProperties: false
+      enable_json:
+        description: Enable JSON metrics reporting
+        type: boolean
+        default: false
+      enable_log:
+        description: Enable log metrics reporting
+        type: boolean
+        default: false
+      enable_verbose:
+        description: Enable extended detail metrics reporting
+        type: boolean
+        default: false
+      periodicity:
+        description: Metrics periodicity configuration
+        type: object
+        properties:
+          app_usage_report_period:
+            description: Application resource usage metrics report period (in milliseconds)
+            type: integer
+            default: 1000
+          executors_report_period:
+            description: Executors metrics report period in milliseconds
+            type: integer
+            minimum: 0
+            maximum: 10485760
+            default: 1000
+          cu_cp_report_period:
+            description: CU-CP metrics report period in milliseconds
+            type: integer
+            default: 1000
+          cu_up_report_period:
+            description: CU-UP metrics report period in milliseconds
+            type: integer
+            default: 1000
+        additionalProperties: false
+    additionalProperties: false
+  expert_execution:
+    description: Expert execution configuration
+    type: object
+    properties:
+      affinities:
+        description: Application CPU affinities configuration
+        type: object
+        properties:
+          main_pool_cpus:
+            description: CPU cores assigned to main thread pool
+            type: string
+          main_pool_pinning:
+            description: Policy used for assigning CPU cores to the main thread pool
+            type: string
+        additionalProperties: false
+      threads:
+        description: Threads configuration
+        type: object
+        properties:
+          main_pool:
+            description: Main thread pool configuration
+            type: object
+            properties:
+              nof_threads:
+                description: Number of threads for processing upper PHY and upper layers.
+                type: integer
+              task_queue_size:
+                description: Main thread pool task queue size.
+                type: integer
+                default: 2048
+              backoff_period:
+                description: Main thread pool back-off period, in microseconds.
+                type: integer
+                default: 50
+            additionalProperties: false
+        additionalProperties: false
+      queues:
+        description: Task executor queue parameters
+        type: object
+        properties:
+          cu_up_dl_ue_executor_queue_size:
+            description: CU-UP's DL UE executor queue size
+            type: integer
+            default: 8192
+          cu_up_ul_ue_executor_queue_size:
+            description: CU-UP's UL UE executor queue size
+            type: integer
+            default: 8192
+          cu_up_ctrl_ue_executor_queue_size:
+            description: CU-UP's CTRL UE executor queue size
+            type: integer
+            default: 8192
+          cu_up_strand_batch_size:
+            description: CU-UP's strands batch size
+            type: integer
+            default: 256
+        additionalProperties: false
+    additionalProperties: false
+  remote_control:
+    description: Remote control configuration
+    type: object
+    properties:
+      enabled:
+        description: Enables the Remote Control Server
+        type: boolean
+        default: false
+      bind_addr:
+        description: Remote Control Server bind address
+        type: string
+        default: 127.0.0.1
+      port:
+        description: Port where the remote control server listens for incoming connections
+        type: integer
+        minimum: 0
+        maximum: 65535
+        default: 8001
+    additionalProperties: false
+  cu_cp:
+    description: CU-CP parameters
+    type: object
+    properties:
+      f1ap:
+        description: F1AP parameters
+        type: object
+        properties:
+          bind_addrs:
+            description: CU F1-C bind addresses. Multiple addresses can be specified for SCTP multi-homing. The '--bind_addr' name is a deprecated alias and should not be used.
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+            default:
+              - 127.0.10.1
+          sctp_rto_initial:
+            description: SCTP initial RTO value in milliseconds (-1 to use system default)
+            type: integer
+            default: 120
+          sctp_rto_min:
+            description: SCTP RTO min in milliseconds (-1 to use system default)
+            type: integer
+            default: 120
+          sctp_rto_max:
+            description: SCTP RTO max in milliseconds (-1 to use system default)
+            type: integer
+            default: 500
+          sctp_init_max_attempts:
+            description: SCTP init max attempts (-1 to use system default)
+            type: integer
+            default: 3
+          sctp_max_init_timeo:
+            description: SCTP max init timeout in milliseconds (-1 to use system default)
+            type: integer
+            default: 500
+          sctp_hb_interval:
+            description: SCTP heartbeat interval in milliseconds (-1 to use system default)
+            type: integer
+            default: 30000
+          sctp_assoc_max_retx:
+            description: SCTP association max retransmissions (-1 to use system default)
+            type: integer
+            default: 10
+          sctp_nodelay:
+            description: Send SCTP messages as soon as possible without any Nagle-like algorithm
+            type: boolean
+            default: false
+          dtls:
+            description: DTLS configuration
+            type: object
+            properties:
+              cert_filename:
+                description: DTLS certificate filename (PEM format)
+                type: string
+                default: ""
+              key_filename:
+                description: DTLS key filename (PEM format)
+                type: string
+                default: ""
+              ca_cert_filename:
+                description: DTLS CA certificate filename (PEM format)
+                type: string
+                default: ""
+            additionalProperties: false
+          procedure_timeout:
+            description: Time that the F1AP waits for a DU response in milliseconds
+            type: integer
+            default: 1000
+          ref_time_reporting:
+            description: Reference Time Information Reporting Control (TS 38.473 section 8.12)
+            type: object
+            properties:
+              enabled:
+                description: Send Reference Time Information Reporting Control to each DU on connection
+                type: boolean
+                default: false
+              event_type:
+                description: "Reporting mode: \"on_demand\" (single report) or \"periodic\" (recurring reports)"
+                type: string
+                enum:
+                  - on_demand
+                  - periodic
+                default: periodic
+              periodicity_rf:
+                description: Reporting period in radio frames (1 RF = 10 ms). Used only when event_type is "periodic"
+                type: integer
+                minimum: 1
+                maximum: 512
+                default: 100
+            additionalProperties: false
+        additionalProperties: false
+      max_nof_dus:
+        description: Maximum number of DU connections that the CU-CP may accept
+        type: integer
+        default: 6
+      max_nof_cu_ups:
+        description: Maximum number of CU-UP connections that the CU-CP may accept
+        type: integer
+        default: 6
+      max_nof_ues:
+        description: Maximum number of UEs that the CU-CP may accept
+        type: integer
+        default: 8192
+      max_nof_drbs_per_ue:
+        description: Maximum number of DRBs per UE
+        type: integer
+        minimum: 1
+        maximum: 29
+        default: 8
+      inactivity_timer:
+        description: UE/PDU Session/DRB inactivity timer in seconds
+        type: integer
+        minimum: 1
+        maximum: 7200
+        default: 120
+      enable_rrc_inactive:
+        description: Enable RRC inactive state for UEs based on inactivity timer. When disabled, UEs will be released on inactivity
+        type: boolean
+        default: false
+      ran_paging_cycle:
+        description: RAN Paging cycle for RRC inactive UEs in nof. Radio Frames
+        type: integer
+        enum:
+          - 32
+          - 64
+          - 128
+          - 256
+        default: 32
+      t380:
+        description: RRC inactivity timer T380 in minutes. The timer is started when the UE receives a RRC Release message including a suspend config and is stopped on the reception of RRCResume.
+        type: integer
+        enum:
+          - 5
+          - 10
+          - 20
+          - 30
+          - 60
+          - 120
+          - 360
+          - 720
+        default: 10
+      full_i_rnti_profile:
+        description: I-RNTI profile of the Full-I-RNTI, which sets the width of the Local NG-RAN Node Identifier it carries
+        type: string
+        enum:
+          - profile0
+          - profile1
+          - profile2
+          - profile3
+        default: profile0
+      short_i_rnti_profile:
+        description: I-RNTI profile of the Short-I-RNTI, which sets the width of the Local NG-RAN Node Identifier it carries
+        type: string
+        enum:
+          - profile0
+          - profile1
+        default: profile0
+      request_pdu_session_timeout:
+        description: Timeout for requesting a PDU session after the InitialUeMessage was sent to the core, in seconds. The timeout must be larger than T310. If the value is reached, the UE will be released.
+        type: integer
+        default: 3
+      logical_cells:
+        description: Sets the list of logical cells declared to the CU-CP (sector_id, admin_state, cell_barred)
+        type: array
+        items:
+          type: object
+          properties:
+            sector_id:
+              description: Sector ID (4-14 bits). This value is concatenated with the gNB Id to form the NR Cell Identity (NCI) of the logical cell, and must match the sector ID of the corresponding DU cell
+              type: integer
+              minimum: 0
+              maximum: 16383
+            admin_state:
+              description: "Administrative state of the cell: locked cells are not activated by the CU-CP until unlocked by command"
+              type: integer
+              default: 0
+            cell_barred:
+              description: Intended MIB cellBarred state of the cell
+              type: boolean
+              default: false
+          additionalProperties: false
+          required:
+            - sector_id
+      amf:
+        description: AMF configuration
+        type: object
+        properties:
+          no_core:
+            description: Allow CU-CP to run without a core
+            type: boolean
+            default: false
+          amf_reconnection_retry_time:
+            description: Time to wait after a failed AMF reconnection attempt in ms
+            type: integer
+            default: 1000
+          procedure_timeout:
+            description: Time that the NGAP waits for a response from the AMF in milliseconds
+            type: integer
+            default: 5000
+          addrs:
+            description: AMF addresses to be used for N2 interface. Multiple addresses can be specified for SCTP multi-homing. The '--addr' name is a deprecated alias and should not be used.
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+            default:
+              - 127.0.1.100
+          port:
+            description: AMF port
+            type: integer
+            minimum: 20000
+            maximum: 40000
+            default: 38412
+          bind_addrs:
+            description: CU-CP bind addresses to be used for N2 interface. Multiple addresses can be specified for SCTP multi-homing. If left empty, implicit bind is performed. The '--bind_addr' name is a deprecated alias and should not be used.
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+            default:
+              - 127.0.0.1
+          bind_interface:
+            description: Network device to bind for N2 interface
+            type: string
+            default: auto
+          sctp_rto_initial:
+            description: SCTP initial RTO value in milliseconds (-1 to use system default)
+            type: integer
+            default: 120
+          sctp_rto_min:
+            description: SCTP RTO min in milliseconds (-1 to use system default)
+            type: integer
+            default: 120
+          sctp_rto_max:
+            description: SCTP RTO max in milliseconds (-1 to use system default)
+            type: integer
+            default: 500
+          sctp_init_max_attempts:
+            description: SCTP init max attempts (-1 to use system default)
+            type: integer
+            default: 3
+          sctp_max_init_timeo:
+            description: SCTP max init timeout in milliseconds (-1 to use system default)
+            type: integer
+            default: 500
+          sctp_hb_interval:
+            description: SCTP heartbeat interval in milliseconds (-1 to use system default)
+            type: integer
+            default: 30000
+          sctp_assoc_max_retx:
+            description: SCTP association max retransmissions (-1 to use system default)
+            type: integer
+            default: 10
+          sctp_nodelay:
+            description: Send SCTP messages as soon as possible without any Nagle-like algorithm
+            type: boolean
+            default: false
+          supported_tracking_areas:
+            description: Sets the list of tracking areas supported by this AMF
+            type: array
+            items:
+              type: object
+              properties:
+                tac:
+                  description: TAC to be configured
+                  type: integer
+                  default: 0
+                plmn_list:
+                  description: Sets the list of PLMN items for this tracking area
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      plmn:
+                        description: PLMN to be configured
+                        type: string
+                        pattern: ^[0-9]{5,6}$
+                        minLength: 5
+                        maxLength: 6
+                        default: ""
+                      tai_slice_support_list:
+                        description: Sets the list of TAI slices for this PLMN
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            sst:
+                              description: Slice Service Type
+                              type: integer
+                              minimum: 0
+                              maximum: 255
+                              default: 0
+                            sd:
+                              description: Service Differentiator
+                              type: integer
+                              minimum: 0
+                              maximum: 16777215
+                              default: 16777215
+                          additionalProperties: false
+                    additionalProperties: false
+                satellite_rat:
+                  description: Satellite RAT type signalled to the AMF for an NTN tracking area (TS 23.501, Section 5.4.10). Leave unset for a terrestrial tracking area
+                  type: string
+                  enum:
+                    - nr_leo
+                    - nr_meo
+                    - nr_geo
+                    - nr_othersat
+              additionalProperties: false
+        additionalProperties: false
+      extra_amfs:
+        description: Sets the list of extra AMFs for the CU-CP to connect to
+        type: array
+        items:
+          type: object
+          properties:
+            addrs:
+              description: AMF addresses to be used for N2 interface. Multiple addresses can be specified for SCTP multi-homing. The '--addr' name is a deprecated alias and should not be used.
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+              default:
+                - 127.0.1.100
+            port:
+              description: AMF port
+              type: integer
+              minimum: 20000
+              maximum: 40000
+              default: 38412
+            bind_addrs:
+              description: CU-CP bind addresses to be used for N2 interface. Multiple addresses can be specified for SCTP multi-homing. If left empty, implicit bind is performed. The '--bind_addr' name is a deprecated alias and should not be used.
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+              default:
+                - 127.0.0.1
+            bind_interface:
+              description: Network device to bind for N2 interface
+              type: string
+              default: auto
+            sctp_rto_initial:
+              description: SCTP initial RTO value in milliseconds (-1 to use system default)
+              type: integer
+              default: 120
+            sctp_rto_min:
+              description: SCTP RTO min in milliseconds (-1 to use system default)
+              type: integer
+              default: 120
+            sctp_rto_max:
+              description: SCTP RTO max in milliseconds (-1 to use system default)
+              type: integer
+              default: 500
+            sctp_init_max_attempts:
+              description: SCTP init max attempts (-1 to use system default)
+              type: integer
+              default: 3
+            sctp_max_init_timeo:
+              description: SCTP max init timeout in milliseconds (-1 to use system default)
+              type: integer
+              default: 500
+            sctp_hb_interval:
+              description: SCTP heartbeat interval in milliseconds (-1 to use system default)
+              type: integer
+              default: 30000
+            sctp_assoc_max_retx:
+              description: SCTP association max retransmissions (-1 to use system default)
+              type: integer
+              default: 10
+            sctp_nodelay:
+              description: Send SCTP messages as soon as possible without any Nagle-like algorithm
+              type: boolean
+              default: false
+            supported_tracking_areas:
+              description: Sets the list of tracking areas supported by this AMF
+              type: array
+              items:
+                type: object
+                properties:
+                  tac:
+                    description: TAC to be configured
+                    type: integer
+                    default: 0
+                  plmn_list:
+                    description: Sets the list of PLMN items for this tracking area
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        plmn:
+                          description: PLMN to be configured
+                          type: string
+                          pattern: ^[0-9]{5,6}$
+                          minLength: 5
+                          maxLength: 6
+                          default: ""
+                        tai_slice_support_list:
+                          description: Sets the list of TAI slices for this PLMN
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              sst:
+                                description: Slice Service Type
+                                type: integer
+                                minimum: 0
+                                maximum: 255
+                                default: 0
+                              sd:
+                                description: Service Differentiator
+                                type: integer
+                                minimum: 0
+                                maximum: 16777215
+                                default: 16777215
+                            additionalProperties: false
+                      additionalProperties: false
+                  satellite_rat:
+                    description: Satellite RAT type signalled to the AMF for an NTN tracking area (TS 23.501, Section 5.4.10). Leave unset for a terrestrial tracking area
+                    type: string
+                    enum:
+                      - nr_leo
+                      - nr_meo
+                      - nr_geo
+                      - nr_othersat
+                additionalProperties: false
+          additionalProperties: false
+      xnap:
+        description: XNAP configuration
+        type: object
+        properties:
+          procedure_timeout:
+            description: Time that the XNAP waits for a response in milliseconds
+            type: integer
+            default: 5000
+          reconnect_timer:
+            description: Time that the XNAP waits before trying to reconnect in milliseconds
+            type: integer
+            default: 10000
+          no_connection_init:
+            description: When true, the CU-CP will not initiate XNAP connections, but will only accept inbound ones
+            type: boolean
+            default: false
+          gateways:
+            description: Sets the list of XnAP gateways, each with its own bind addresses, SCTP options, and Xn-C peer connections
+            type: array
+            items:
+              type: object
+              properties:
+                bind_addrs:
+                  description: Local IP addresses to bind for this XnAP gateway. Multiple addresses can be specified for SCTP multi-homing. If left empty, implicit bind is performed
+                  oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                  default:
+                    - 127.0.30.1
+                sctp:
+                  description: SCTP socket options
+                  type: object
+                  properties:
+                    sctp_rto_initial:
+                      description: SCTP initial RTO value in milliseconds (-1 to use system default)
+                      type: integer
+                      default: 120
+                    sctp_rto_min:
+                      description: SCTP RTO min in milliseconds (-1 to use system default)
+                      type: integer
+                      default: 120
+                    sctp_rto_max:
+                      description: SCTP RTO max in milliseconds (-1 to use system default)
+                      type: integer
+                      default: 500
+                    sctp_init_max_attempts:
+                      description: SCTP init max attempts (-1 to use system default)
+                      type: integer
+                      default: 3
+                    sctp_max_init_timeo:
+                      description: SCTP max init timeout in milliseconds (-1 to use system default)
+                      type: integer
+                      default: 500
+                    sctp_hb_interval:
+                      description: SCTP heartbeat interval in milliseconds (-1 to use system default)
+                      type: integer
+                      default: 30000
+                    sctp_assoc_max_retx:
+                      description: SCTP association max retransmissions (-1 to use system default)
+                      type: integer
+                      default: 10
+                    sctp_nodelay:
+                      description: Send SCTP messages as soon as possible without any Nagle-like algorithm
+                      type: boolean
+                      default: false
+                  additionalProperties: false
+                dtls:
+                  description: DTLS options
+                  type: object
+                  properties:
+                    mode:
+                      description: DTLS mode
+                      type: integer
+                      default: 0
+                    cert_filename:
+                      description: DTLS certificate filename (PEM format)
+                      type: string
+                      default: ""
+                    key_filename:
+                      description: DTLS key filename (PEM format)
+                      type: string
+                      default: ""
+                    ca_cert_filename:
+                      description: DTLS CA certificate filename (PEM format)
+                      type: string
+                      default: ""
+                  additionalProperties: false
+                connections:
+                  description: Sets the list of Xn-C peer connections reachable via this gateway
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      peer_addrs:
+                        description: Peer gNB IP addresses to connect for XnAP interface. Multiple addresses can be specified for SCTP multi-homing
+                        oneOf:
+                          - type: string
+                          - type: array
+                            items:
+                              type: string
+                        default:
+                          []
+                    additionalProperties: false
+              additionalProperties: false
+        additionalProperties: false
+      mobility:
+        description: Mobility configuration
+        type: object
+        properties:
+          trigger_handover_from_measurements:
+            description: Whether to start HO if neighbor cells become stronger
+            type: boolean
+            default: false
+          trigger_cho_on_ue_setup:
+            description: Whether to auto-trigger CHO after UE setup when readiness checks pass
+            type: boolean
+            default: false
+          cho_timeout_ms:
+            description: Timeout in milliseconds used for auto-triggered CHO and as default timeout for manual CHO command
+            type: integer
+            minimum: 1
+            maximum: 600000
+            default: 10000
+          ntn_update_period_ms:
+            description: Period in milliseconds of the NTN neighbour cell info updates in the measurement configuration
+            type: integer
+            minimum: 100
+            maximum: 2000
+            default: 1000
+          cells:
+            description: Sets the list of cells known to the CU-CP
+            type: array
+            items:
+              type: object
+              properties:
+                nr_cell_id:
+                  description: Cell id to be configured
+                  type: integer
+                  minimum: 0
+                  maximum: 68719476735
+                  default: 0
+                periodic_report_cfg_id:
+                  description: Periodical report configuration for the serving cell
+                  type: integer
+                  minimum: 1
+                  maximum: 64
+                band:
+                  description: NR frequency band
+                  type: integer
+                gnb_id_bit_length:
+                  description: gNodeB identifier bit length. If not set, it will be automatically set to be equal to the gNodeB Id of the CU-CP
+                  type: integer
+                  minimum: 22
+                  maximum: 32
+                pci:
+                  description: Physical Cell Id
+                  type: integer
+                  minimum: 0
+                  maximum: 1007
+                plmn:
+                  description: PLMN of the cell
+                  type: string
+                  pattern: ^[0-9]{5,6}$
+                  minLength: 5
+                  maxLength: 6
+                tac:
+                  description: Tracking Area Code
+                  type: integer
+                  minimum: 0
+                  maximum: 16777215
+                ssb_arfcn:
+                  description: SSB ARFCN
+                  type: integer
+                ssb_scs:
+                  description: SSB subcarrier spacing
+                  type: integer
+                  enum:
+                    - 15
+                    - 30
+                    - 60
+                    - 120
+                    - 240
+                ssb_period:
+                  description: SSB period in ms
+                  type: integer
+                  enum:
+                    - 5
+                    - 10
+                    - 20
+                    - 40
+                    - 80
+                    - 160
+                ssb_offset:
+                  description: SSB offset
+                  type: integer
+                ssb_duration:
+                  description: SSB duration
+                  type: integer
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                ntn:
+                  description: NTN configuration of this cell
+                  type: object
+                  properties:
+                    satellite_idx:
+                      description: Satellite index. Required when defining a satellite object; optional when referencing or inline-defining a satellite, in which case it is mutually exclusive with epoch_timestamp, ephemeris_info, gateway_location and ta_info.
+                      type: integer
+                    epoch_timestamp:
+                      description: "Epoch timestamp (Unix ms or ISO 8601: YYYY-MM-DDTHH:MM:SS[.mmm])"
+                      type: string
+                    propagator_type:
+                      description: "Orbit propagator: rk4 or keplerian"
+                      type: string
+                      enum:
+                        - rk4
+                        - keplerian
+                    ephemeris_info_ecef:
+                      description: ECEF ephemeris
+                      type: object
+                      properties:
+                        pos_x:
+                          description: X Position of the satellite [m]
+                          type: number
+                          minimum: -43620761.6
+                          maximum: 43620759.3
+                        pos_y:
+                          description: Y Position of the satellite [m]
+                          type: number
+                          minimum: -43620761.6
+                          maximum: 43620759.3
+                        pos_z:
+                          description: Z Position of the satellite [m]
+                          type: number
+                          minimum: -43620761.6
+                          maximum: 43620759.3
+                        vel_x:
+                          description: X Velocity of the satellite [m/s]
+                          type: number
+                          minimum: -7864.32
+                          maximum: 7864.26
+                        vel_y:
+                          description: Y Velocity of the satellite [m/s]
+                          type: number
+                          minimum: -7864.32
+                          maximum: 7864.26
+                        vel_z:
+                          description: Z Velocity of the satellite [m/s]
+                          type: number
+                          minimum: -7864.32
+                          maximum: 7864.26
+                      additionalProperties: false
+                      required:
+                        - pos_x
+                        - pos_y
+                        - pos_z
+                        - vel_x
+                        - vel_y
+                        - vel_z
+                    ephemeris_orbital:
+                      description: Orbital ephemeris
+                      type: object
+                      properties:
+                        semi_major_axis:
+                          description: Semi-major axis of the satellite [m]
+                          type: number
+                          minimum: 6500000
+                          maximum: 42998632.07
+                        eccentricity:
+                          description: Eccentricity of the satellite [-]
+                          type: number
+                          minimum: 0
+                          maximum: 0.01500510825
+                        periapsis:
+                          description: Periapsis of the satellite [rad]
+                          type: number
+                          minimum: 0
+                          maximum: 6.28407400155
+                        longitude:
+                          description: Longitude of the satellites angle of ascending node [rad]
+                          type: number
+                          minimum: 0
+                          maximum: 6.28407400155
+                        inclination:
+                          description: Inclination of the satellite [rad]
+                          type: number
+                          minimum: -1.57101850624
+                          maximum: 1.57101848283
+                        mean_anomaly:
+                          description: Mean anomaly of the satellite [rad]
+                          type: number
+                          minimum: 0
+                          maximum: 6.28407400155
+                      additionalProperties: false
+                      required:
+                        - semi_major_axis
+                        - eccentricity
+                        - periapsis
+                        - longitude
+                        - inclination
+                        - mean_anomaly
+                    gateway_location:
+                      description: NTN gateway geodetic coordinates
+                      type: object
+                      properties:
+                        latitude:
+                          description: Latitude [degree]
+                          type: number
+                          minimum: -90
+                          maximum: 90
+                          default: 0
+                        longitude:
+                          description: Longitude [degree]
+                          type: number
+                          minimum: -180
+                          maximum: 180
+                          default: 0
+                        altitude:
+                          description: Altitude [m]
+                          type: number
+                          minimum: -1000
+                          maximum: 20000
+                          default: 0
+                      additionalProperties: false
+                    ta_info:
+                      description: TA info override (mutually exclusive with gateway_location)
+                      type: object
+                      properties:
+                        ta_common:
+                          description: TA common
+                          type: number
+                          minimum: 0
+                          maximum: 270730
+                          default: 0
+                        ta_common_drift:
+                          description: Drift rate of the common TA
+                          type: number
+                          minimum: -51.4606
+                          maximum: 51.4606
+                          default: 0
+                        ta_common_drift_variant:
+                          description: Drift rate variation of the common TA
+                          type: number
+                          minimum: 0
+                          maximum: 0.57898
+                          default: 0
+                        ta_common_offset:
+                          description: Constant offset added to TA common
+                          type: number
+                          minimum: 0
+                          maximum: 10000
+                      additionalProperties: false
+                    reference_location:
+                      description: 2-D reference location of the cell
+                      type: object
+                      properties:
+                        latitude:
+                          description: Latitude [degree]
+                          type: number
+                          minimum: -90
+                          maximum: 90
+                          default: 0
+                        longitude:
+                          description: Longitude [degree]
+                          type: number
+                          minimum: -180
+                          maximum: 180
+                          default: 0
+                      additionalProperties: false
+                    polarization:
+                      description: Service link DL/UL polarization of the cell
+                      type: object
+                      properties:
+                        dl:
+                          description: Polarization information for downlink transmission on service link
+                          type: string
+                          enum:
+                            - lhcp
+                            - rhcp
+                            - linear
+                        ul:
+                          description: Polarization information for uplink transmission on service link
+                          type: string
+                          enum:
+                            - lhcp
+                            - rhcp
+                            - linear
+                      additionalProperties: false
+                  additionalProperties: false
+                ncells:
+                  description: Sets the list of neighbor cells known to the CU-CP
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      nr_cell_id:
+                        description: Neighbor cell id
+                        type: integer
+                        minimum: 0
+                        maximum: 68719476735
+                        default: 0
+                      report_configs:
+                        description: Report configurations to configure for this neighbor cell
+                        oneOf:
+                          - type: integer
+                          - type: array
+                            items:
+                              type: integer
+                        default:
+                          []
+                    additionalProperties: false
+              additionalProperties: false
+          report_configs:
+            description: Sets report configurations
+            type: array
+            items:
+              type: object
+              properties:
+                report_cfg_id:
+                  description: Report configuration id to be configured
+                  type: integer
+                  minimum: 1
+                  maximum: 64
+                  default: 0
+                report_type:
+                  description: Type of the report configuration
+                  type: string
+                  enum:
+                    - periodical
+                    - event_triggered
+                    - cond_trigger
+                  default: ""
+                event_triggered_report_type:
+                  description: Type of the event triggered report
+                  type: string
+                  enum:
+                    - a1
+                    - a2
+                    - a3
+                    - a4
+                    - a5
+                    - a6
+                    - d1
+                    - t1
+                    - d2
+                report_interval_ms:
+                  description: Report interval in ms
+                  type: integer
+                  enum:
+                    - 120
+                    - 240
+                    - 480
+                    - 640
+                    - 1024
+                    - 2048
+                    - 5120
+                    - 10240
+                    - 20480
+                    - 40960
+                    - 60000
+                    - 360000
+                    - 720000
+                    - 1800000
+                  default: 0
+                coarse_location_request:
+                  description: Ask an NTN UE to include its coarse location, if available, in every report of this configuration
+                  type: boolean
+                  default: false
+                periodic_ho_rsrp_offset_db:
+                  description: Measurement trigger quantity offset in dB used to trigger handovers by periodic measurement reports. When set to -1 no handover will be triggered from periodical measurements. Note the actual value is field value * 0.5 dB
+                  type: integer
+                  minimum: -1
+                  maximum: 30
+                  default: -1
+                meas_trigger_quantity:
+                  description: Measurement trigger quantity (RSRP/RSRQ/SINR)
+                  type: string
+                  enum:
+                    - rsrp
+                    - rsrq
+                    - sinr
+                meas_trigger_quantity_threshold_db:
+                  description: "Measurement trigger quantity threshold in dB used for measurement report trigger of event A1/A2/A4/A5Valid ranges: RSRP [-156..-31] dBm, RSRQ [-43..20] dB, SINR [-23..40] dB"
+                  type: integer
+                  minimum: -156
+                  maximum: 40
+                meas_trigger_quantity_threshold_2_db:
+                  description: "Measurement trigger quantity threshold 2 in dB used for measurement report trigger of event A5Valid ranges: RSRP [-156..-31] dBm, RSRQ [-43..20] dB, SINR [-23..40] dB"
+                  type: integer
+                  minimum: -156
+                  maximum: 40
+                meas_trigger_quantity_offset_db:
+                  description: Measurement trigger quantity offset in dB used for measurement report trigger of event A3/A6.
+                  type: integer
+                  minimum: -15
+                  maximum: 15
+                hysteresis_db:
+                  description: Hysteresis in dB used for measurement report trigger.
+                  type: integer
+                  minimum: 0
+                  maximum: 15
+                time_to_trigger_ms:
+                  description: Time in ms during which a condition must be met before measurement report trigger
+                  type: integer
+                  enum:
+                    - 0
+                    - 40
+                    - 64
+                    - 80
+                    - 100
+                    - 128
+                    - 160
+                    - 256
+                    - 320
+                    - 480
+                    - 512
+                    - 640
+                    - 1024
+                    - 1280
+                    - 2560
+                    - 5120
+                t312:
+                  description: T312 timer in ms. This timer is started by the UE on event triggered measurement report, when T310 (out-of-sync) timer is already running and on its expiration triggers the RLF to speed up reestablishment to different cell.
+                  type: integer
+                  enum:
+                    - 0
+                    - 50
+                    - 100
+                    - 200
+                    - 300
+                    - 400
+                    - 500
+                    - 1000
+                distance_thresh_from_ref1_km:
+                  description: "D1/D2: distance threshold 1 in km [0..3276.75] (50m steps, D1 max is 3276.25)"
+                  type: number
+                  minimum: 0
+                  maximum: 3276.75
+                distance_thresh_from_ref2_km:
+                  description: "D1/D2: distance threshold 2 in km [0..3276.75] (50m steps, D1 max is 3276.25)"
+                  type: number
+                  minimum: 0
+                  maximum: 3276.75
+                hysteresis_location_km:
+                  description: "D1/D2: location hysteresis in km [0..327.68] (10m steps)"
+                  type: number
+                  minimum: 0
+                  maximum: 327.68
+                ref_location1:
+                  description: "D1: reference location 1 (serving cell)"
+                  type: object
+                  properties:
+                    latitude:
+                      description: Latitude [degrees, -90..90]
+                      type: number
+                      minimum: -90
+                      maximum: 90
+                      default: 0
+                    longitude:
+                      description: Longitude [degrees, -180..180]
+                      type: number
+                      minimum: -180
+                      maximum: 180
+                      default: 0
+                  additionalProperties: false
+                ref_location2:
+                  description: "D1: reference location 2 (target cell)"
+                  type: object
+                  properties:
+                    latitude:
+                      description: Latitude [degrees, -90..90]
+                      type: number
+                      minimum: -90
+                      maximum: 90
+                      default: 0
+                    longitude:
+                      description: Longitude [degrees, -180..180]
+                      type: number
+                      minimum: -180
+                      maximum: 180
+                      default: 0
+                  additionalProperties: false
+                t1_thres:
+                  description: "T1: time threshold (Unix ms integer or YYYY-MM-DDTHH:MM:SS[.mmm])"
+                  type: string
+                duration_s:
+                  description: "T1: duration in seconds (each step=100ms, range [0.1..600])"
+                  type: number
+                  minimum: 0.1
+                  maximum: 600
+              additionalProperties: false
+        additionalProperties: false
+      ntn_location_mapping:
+        description: Sets the coarse UE location to TAC mapping per cell
+        type: array
+        items:
+          type: object
+          properties:
+            nr_cell_id:
+              description: Cell the mapping applies to
+              type: integer
+              minimum: 0
+              maximum: 68719476735
+              default: 0
+            location_areas:
+              description: Sets the areas a coarse UE location is mapped to
+              type: array
+              items:
+                type: object
+                properties:
+                  tac:
+                    description: TAC to report for a UE inside this area. Unset to derive no TAC
+                    type: integer
+                    minimum: 0
+                    maximum: 16777215
+                  mapped_nr_cell_id:
+                    description: Mapped Cell ID reported for a UE inside this area, instead of the cell id of the serving cell
+                    type: integer
+                    minimum: 0
+                    maximum: 68719476735
+                  lat_min:
+                    description: Southern edge of the area, in degrees
+                    type: number
+                    minimum: -90
+                    maximum: 90
+                    default: 0
+                  lat_max:
+                    description: Northern edge of the area, in degrees
+                    type: number
+                    minimum: -90
+                    maximum: 90
+                    default: 0
+                  lon_min:
+                    description: Western edge of the area, in degrees
+                    type: number
+                    minimum: -180
+                    maximum: 180
+                    default: 0
+                  lon_max:
+                    description: Eastern edge of the area, in degrees
+                    type: number
+                    minimum: -180
+                    maximum: 180
+                    default: 0
+                additionalProperties: false
+          additionalProperties: false
+      rrc:
+        description: RRC specific configuration
+        type: object
+        properties:
+          force_reestablishment_fallback:
+            description: Force RRC re-establishment fallback to RRC setup
+            type: boolean
+            default: false
+          force_resume_fallback:
+            description: Force RRC resume fallback to RRC setup
+            type: boolean
+            default: false
+          rrc_procedure_guard_time_ms:
+            description: Guard time in ms used for RRC message exchange with UE. This is added to the RRC procedure timeout.
+            type: integer
+            default: 1000
+          rrc_reject_wait_time_s:
+            description: "Optional: WaitTime [s] (1..16) signalled in the RRC Reject waitTime IE. If not provided, no waitTime will be sent with RRC Reject."
+            type: integer
+            minimum: 1
+            maximum: 16
+        additionalProperties: false
+      security:
+        description: Security configuration
+        type: object
+        properties:
+          integrity:
+            description: Default integrity protection indication for DRBs
+            type: string
+          confidentiality:
+            description: Default confidentiality protection indication for DRBs
+            type: string
+          nea_pref_list:
+            description: "Ordered preference list for the selection of encryption algorithm (NEA) (default: NEA0, NEA2, NEA1)"
+            type: string
+          nia_pref_list:
+            description: "Ordered preference list for the selection of encryption algorithm (NIA) (default: NIA2, NIA1)"
+            type: string
+        additionalProperties: false
+      e1ap:
+        description: E1AP configuration parameters
+        type: object
+        properties:
+          procedure_timeout:
+            description: Time that the E1AP waits for a CU-UP response in milliseconds
+            type: integer
+            default: 1000
+        additionalProperties: false
+      pws:
+        description: Public Warning System configuration
+        type: object
+        properties:
+          max_warning_message_segment_size:
+            description: Maximum bytes per SIB7/SIB8 warning message segment. The warning message contents (up to 9600 bytes) is split into chunks of this size, each encoded as a separate SIB.
+            type: integer
+            exclusiveMinimum: 0
+            default: 150
+        additionalProperties: false
+    additionalProperties: false
+  cu_up:
+    description: CU-UP parameters
+    type: object
+    properties:
+      f1u:
+        description: F1-U parameters
+        type: object
+        properties:
+          bind_port:
+            description: F1-U bind port
+            type: integer
+            default: 2152
+          peer_port:
+            description: F1-U peer port
+            type: integer
+            default: 2152
+          socket:
+            description: Configures UDP/IP socket parameters of the F1-U interface
+            type: array
+            items:
+              type: object
+              properties:
+                bind_addr:
+                  description: Default local IP address interfaces bind to, unless a specific bind address is specified
+                  type: string
+                  default: 127.0.10.1
+                sst:
+                  description: Slice Service Type
+                  type: integer
+                  minimum: 0
+                  maximum: 255
+                sd:
+                  description: Service Differentiator
+                  type: integer
+                  minimum: 0
+                  maximum: 16777214
+                five_qi:
+                  description: Assign this socket to a specific 5QI
+                  type: integer
+                  minimum: 0
+                  maximum: 255
+                ext_addr:
+                  description: External IP address that is advertised for receiving UDP packets.
+                  type: string
+                  default: auto
+                udp:
+                  description: UDP parameters
+                  type: object
+                  properties:
+                    max_rx_msgs:
+                      description: Maximum amount of messages RX in a single syscall
+                      type: integer
+                      default: 256
+                    tx_qsize:
+                      description: Size of TX queue used for batching SDUs.
+                      type: integer
+                      default: 4096
+                    max_tx_msgs:
+                      description: Maximum amount of messages TX in a single syscall
+                      type: integer
+                      default: 256
+                    max_tx_segments:
+                      description: Maximum amount of segments TX in a single SDU
+                      type: integer
+                      default: 256
+                    pool_threshold:
+                      description: Pool accupancy threshold after which packets are dropped
+                      type: number
+                      default: 0.8999999761581421
+                    reuse_addr:
+                      description: Allow multiple sockets to bind to the same port.
+                      type: boolean
+                      default: false
+                    dscp:
+                      description: Differentiated Services Code Point value.
+                      type: integer
+                      minimum: 0
+                      maximum: 63
+                  additionalProperties: false
+              additionalProperties: false
+        additionalProperties: false
+      ngu:
+        description: NG-U parameters
+        type: object
+        properties:
+          no_core:
+            description: Allow gNB to run without a core
+            type: boolean
+            default: false
+          gtpu:
+            description: CU-UP NG-U GTP-U parameters
+            type: object
+            properties:
+              queue_size:
+                description: GTP-U queue size, in PDUs
+                type: integer
+                default: 2046
+              batch_size:
+                description: Maximum number of GTP-U PDUs processed in a batch
+                type: integer
+                default: 256
+              reordering_timer:
+                description: GTP-U RX reordering timer (in milliseconds)
+                type: integer
+                default: 0
+              rate_limiter_period:
+                description: GTP-U RX rate limiter period (in milliseconds)
+                type: integer
+                default: 100
+              teid_release_linger_time:
+                description: Error indication suppression time for released TEIDs (in milliseconds)
+                type: integer
+                default: 100
+              ignore_ue_ambr:
+                description: Ignore GTP-U DL UE-AMBR rate limiter
+                type: boolean
+                default: true
+            additionalProperties: false
+          socket:
+            description: Configures UDP/IP socket parameters of the NG-U interface
+            type: array
+            items:
+              type: object
+              properties:
+                bind_addr:
+                  description: Local IP address to bind for NG-U interface
+                  type: string
+                  default: 127.0.0.1
+                bind_interface:
+                  description: Network device to bind for NG-U interface
+                  type: string
+                  default: auto
+                ext_addr:
+                  description: External IP address that is advertised for receiving UDP packets.
+                  type: string
+                  default: auto
+                udp:
+                  description: UDP parameters
+                  type: object
+                  properties:
+                    max_rx_msgs:
+                      description: Maximum amount of messages RX in a single syscall
+                      type: integer
+                      default: 256
+                    tx_qsize:
+                      description: Size of TX queue used for batching SDUs.
+                      type: integer
+                      default: 4096
+                    max_tx_msgs:
+                      description: Maximum amount of messages TX in a single syscall
+                      type: integer
+                      default: 256
+                    max_tx_segments:
+                      description: Maximum amount of segments TX in a single SDU
+                      type: integer
+                      default: 256
+                    pool_threshold:
+                      description: Pool accupancy threshold after which packets are dropped
+                      type: number
+                      default: 0.8999999761581421
+                    reuse_addr:
+                      description: Allow multiple sockets to bind to the same port.
+                      type: boolean
+                      default: false
+                    dscp:
+                      description: Differentiated Services Code Point value.
+                      type: integer
+                      minimum: 0
+                      maximum: 63
+                  additionalProperties: false
+              additionalProperties: false
+        additionalProperties: false
+      xnu:
+        description: Xn-U parameters
+        type: object
+        properties:
+          gtpu:
+            description: CU-UP Xn-U GTP-U parameters
+            type: object
+            properties:
+              queue_size:
+                description: GTP-U queue size, in PDUs
+                type: integer
+                default: 2046
+              batch_size:
+                description: Maximum number of GTP-U PDUs processed in a batch
+                type: integer
+                default: 256
+              reordering_timer:
+                description: GTP-U RX reordering timer (in milliseconds)
+                type: integer
+                default: 0
+              rate_limiter_period:
+                description: GTP-U RX rate limiter period (in milliseconds)
+                type: integer
+                default: 100
+              teid_release_linger_time:
+                description: Error indication suppression time for released TEIDs (in milliseconds)
+                type: integer
+                default: 100
+            additionalProperties: false
+          bind_port:
+            description: Xn-U bind port
+            type: integer
+            default: 2152
+          peer_port:
+            description: Xn-U peer port
+            type: integer
+            default: 2152
+          socket:
+            description: Configures UDP/IP socket parameters of the Xn-U interface
+            type: array
+            items:
+              type: object
+              properties:
+                bind_addr:
+                  description: Default local IP address interfaces bind to, unless a specific bind address is specified
+                  type: string
+                  default: 127.0.50.1
+                sst:
+                  description: Slice Service Type
+                  type: integer
+                  minimum: 0
+                  maximum: 255
+                sd:
+                  description: Service Differentiator
+                  type: integer
+                  minimum: 0
+                  maximum: 16777214
+                five_qi:
+                  description: Assign this socket to a specific 5QI
+                  type: integer
+                  minimum: 0
+                  maximum: 255
+                ext_addr:
+                  description: External IP address that is advertised for receiving UDP packets.
+                  type: string
+                  default: auto
+                udp:
+                  description: UDP parameters
+                  type: object
+                  properties:
+                    max_rx_msgs:
+                      description: Maximum amount of messages RX in a single syscall
+                      type: integer
+                      default: 256
+                    tx_qsize:
+                      description: Size of TX queue used for batching SDUs.
+                      type: integer
+                      default: 4096
+                    max_tx_msgs:
+                      description: Maximum amount of messages TX in a single syscall
+                      type: integer
+                      default: 256
+                    max_tx_segments:
+                      description: Maximum amount of segments TX in a single SDU
+                      type: integer
+                      default: 256
+                    pool_threshold:
+                      description: Pool accupancy threshold after which packets are dropped
+                      type: number
+                      default: 0.8999999761581421
+                    reuse_addr:
+                      description: Allow multiple sockets to bind to the same port.
+                      type: boolean
+                      default: false
+                    dscp:
+                      description: Differentiated Services Code Point value.
+                      type: integer
+                      minimum: 0
+                      maximum: 63
+                  additionalProperties: false
+              additionalProperties: false
+        additionalProperties: false
+      test_mode:
+        description: CU-UP test mode parameters
+        type: object
+        properties:
+          enable:
+            description: Enable or disable CU-UP test mode
+            type: boolean
+            default: false
+          integrity_enable:
+            description: Enable or disable PDCP integrity testing
+            type: boolean
+            default: true
+          ciphering_enable:
+            description: Enable or disable PDCP ciphering testing
+            type: boolean
+            default: true
+          nea_algo:
+            description: NEA algo to use for testing. Valid values {0, 1, 2, 3}.
+            type: integer
+            minimum: 0
+            maximum: 3
+            default: 2
+          nia_algo:
+            description: NIA algo to use for testing. Valid values {1, 2, 3}.
+            type: integer
+            minimum: 1
+            maximum: 3
+            default: 2
+          ue_ambr:
+            description: DL UE-AMBR used for testing in bps
+            type: integer
+            default: 40000000000
+          attach_detach_period:
+            description: Attach/detach period for test mode. 0 means always attached
+            type: integer
+            default: 0
+          reestablish_period:
+            description: Reestablish period for test mode. 0 means always attached
+            type: integer
+            default: 0
+          f1u_peer_address:
+            description: Address for DL F1-U packets for test mode
+            type: string
+            default: 127.0.10.2
+          nof_ues:
+            description: Number of UEs used for test mode
+            type: integer
+            default: 1
+        additionalProperties: false
+      warn_on_drop:
+        description: Log a warning for dropped packets in GTP-U, SDAP, PDCP and F1-U due to full queues
+        type: boolean
+        default: false
+      max_nof_ues:
+        description: Maximum number of Bearer Contexts allowed by the CU-UP
+        type: integer
+        minimum: 1
+        maximum: 65536
+        default: 16384
+      plmn_list:
+        description: List of supported PLMN IDs (e.g. "00101")
+        oneOf:
+          - type: string
+            pattern: ^[0-9]{5,6}$
+            minLength: 5
+            maxLength: 6
+          - type: array
+            items:
+              type: string
+              pattern: ^[0-9]{5,6}$
+              minLength: 5
+              maxLength: 6
+        default:
+          []
+    additionalProperties: false
+  gnb_id:
+    description: gNodeB identifier
+    type: integer
+    default: 411
+  gnb_id_bit_length:
+    description: gNodeB identifier length in bits
+    type: integer
+    minimum: 22
+    maximum: 32
+    default: 22
+  ran_node_name:
+    description: RAN node name
+    type: string
+    default: ocucp01
+  pcap:
+    description: PCAP configuration
+    type: object
+    properties:
+      ngap_filename:
+        description: NG-C PCAP file output path
+        type: string
+        default: /tmp/cu_ngap.pcap
+      ngap_enable:
+        description: Enable NG-C packet capture
+        type: boolean
+        default: false
+      xnap_filename:
+        description: XNAP PCAP file output path
+        type: string
+        default: /tmp/cu_xnap.pcap
+      xnap_enable:
+        description: Enable XNAP packet capture
+        type: boolean
+        default: false
+      f1ap_filename:
+        description: F1AP PCAP file output path
+        type: string
+        default: /tmp/cu_f1ap.pcap
+      f1ap_enable:
+        description: Enable F1AP packet capture
+        type: boolean
+        default: false
+      e1ap_filename:
+        description: E1AP PCAP file output path
+        type: string
+        default: /tmp/cu_e1ap.pcap
+      e1ap_enable:
+        description: E1AP PCAP
+        type: boolean
+        default: false
+      e2ap_cu_cp_filename:
+        description: E2AP PCAP file output path
+        type: string
+        default: /tmp/cu_cp_e2ap.pcap
+      e2ap_enable:
+        description: Enable E2AP packet capture
+        type: boolean
+        default: false
+      n3_filename:
+        description: NG-U GTP-U PCAP file output path
+        type: string
+        default: /tmp/cu_ngu.pcap
+      n3_enable:
+        description: Enable NG-U GTP-U packet capture
+        type: boolean
+        default: false
+      f1u_filename:
+        description: F1-U GTP-U PCAP file output path
+        type: string
+        default: /tmp/cu_f1u.pcap
+      f1u_enable:
+        description: F1-U GTP-U PCAP
+        type: boolean
+        default: false
+      e2ap_cu_up_filename:
+        description: E2AP PCAP file output path
+        type: string
+        default: /tmp/cu_up_e2ap.pcap
+    additionalProperties: false
+  qos:
+    description: Configures RLC and PDCP radio bearers on a per 5QI basis.
+    type: array
+    items:
+      type: object
+      properties:
+        five_qi:
+          description: 5QI
+          type: integer
+          minimum: 0
+          maximum: 255
+          default: 9
+        rlc:
+          description: RLC parameters
+          type: object
+          properties:
+            mode:
+              description: RLC mode
+              type: string
+              enum:
+                - tm
+                - um-bidir
+                - um-unidir-ul
+                - um-unidir-dl
+                - am
+            um-bidir:
+              description: UM parameters
+              type: object
+              properties:
+                tx:
+                  description: UM TX parameters
+                  type: object
+                  properties:
+                    sn:
+                      description: RLC UM TX SN
+                      type: integer
+                      default: 0
+                    queue-size:
+                      description: RLC UM TX SDU queue size
+                      type: integer
+                      default: 0
+                  additionalProperties: false
+                rx:
+                  description: UM TX parameters
+                  type: object
+                  properties:
+                    sn:
+                      description: RLC UM RX SN
+                      type: integer
+                      default: 0
+                    t-reassembly:
+                      description: RLC UM t-Reassembly
+                      type: integer
+                      default: 0
+                  additionalProperties: false
+              additionalProperties: false
+            am:
+              description: AM parameters
+              type: object
+              properties:
+                tx:
+                  description: AM TX parameters
+                  type: object
+                  properties:
+                    sn:
+                      description: RLC AM TX SN size
+                      type: integer
+                      default: 0
+                    t-poll-retransmit:
+                      description: RLC AM TX t-PollRetransmit (ms)
+                      type: integer
+                      default: 0
+                    max-retx-threshold:
+                      description: RLC AM max retx threshold
+                      type: integer
+                      default: 0
+                    poll-pdu:
+                      description: RLC AM TX PollPdu
+                      type: integer
+                      default: 0
+                    poll-byte:
+                      description: RLC AM TX PollByte
+                      type: integer
+                      default: 0
+                    max_window:
+                      description: Non-standard parameter that limits the tx window size. Can be used for limiting memory usage with large windows. 0 means no limits other than the SN size (i.e. 2^[sn_size-1]).
+                      type: integer
+                      default: 0
+                    queue-size:
+                      description: RLC AM TX SDU queue size
+                      type: integer
+                      default: 4096
+                  additionalProperties: false
+                rx:
+                  description: AM RX parameters
+                  type: object
+                  properties:
+                    sn:
+                      description: RLC AM RX SN
+                      type: integer
+                      default: 0
+                    t-reassembly:
+                      description: RLC AM RX t-Reassembly
+                      type: integer
+                      default: 0
+                    t-status-prohibit:
+                      description: RLC AM RX t-StatusProhibit
+                      type: integer
+                      default: 0
+                    max_sn_per_status:
+                      description: RLC AM RX status SN limit
+                      type: integer
+                      default: 0
+                  additionalProperties: false
+              additionalProperties: false
+          additionalProperties: false
+        pdcp:
+          description: PDCP parameters
+          type: object
+          properties:
+            rohc:
+              description: Header compression parameters
+              type: object
+              properties:
+                rohc_type:
+                  description: "ROHC type (none/rohc/ul_only_rohc). Values: {none, rohc, ul_only_rohc}. Default: none"
+                  type: string
+                  enum:
+                    - none
+                    - rohc
+                    - uplink_only_rohc
+                max_cid:
+                  description: Maximum CID
+                  type: integer
+                  default: 15
+                profile0x0001:
+                  description: Configure profile0x0001 (ROHCv1 RTP/UDP/IP)
+                  type: boolean
+                  default: false
+                profile0x0002:
+                  description: Configure profile0x0002 (ROHCv1 UDP/IP)
+                  type: boolean
+                  default: false
+                profile0x0003:
+                  description: Configure profile0x0003 (ROHCv1 ESP/IP)
+                  type: boolean
+                  default: false
+                profile0x0004:
+                  description: Configure profile0x0004 (ROHCv1 IP)
+                  type: boolean
+                  default: false
+                profile0x0006:
+                  description: Configure profile0x0006 (ROHCv1 TCP/IP)
+                  type: boolean
+                  default: false
+                profile0x0101:
+                  description: Configure profile0x0101 (ROHCv2 RTP/UDP/IP)
+                  type: boolean
+                  default: false
+                profile0x0102:
+                  description: Configure profile0x0102 (ROHCv2 UDP/IP)
+                  type: boolean
+                  default: false
+                profile0x0103:
+                  description: Configure profile0x0103 (ROHCv2 ESP/IP)
+                  type: boolean
+                  default: false
+                profile0x0104:
+                  description: Configure profile0x0104 (ROHCv2 IP)
+                  type: boolean
+                  default: false
+              additionalProperties: false
+            tx:
+              description: PDCP TX parameters
+              type: object
+              properties:
+                sn:
+                  description: PDCP TX SN size
+                  type: integer
+                  enum:
+                    - 12
+                    - 18
+                  default: 0
+                discard_timer:
+                  description: PDCP TX discard timer (ms)
+                  type: integer
+                  default: 0
+                status_report_required:
+                  description: PDCP TX status report required
+                  type: boolean
+                  default: false
+              additionalProperties: false
+            rx:
+              description: PDCP RX parameters
+              type: object
+              properties:
+                sn:
+                  description: PDCP RX SN size
+                  type: integer
+                  enum:
+                    - 12
+                    - 18
+                  default: 0
+                t_reordering:
+                  description: PDCP RX t-Reordering (ms)
+                  type: integer
+                  default: 0
+                out_of_order_delivery:
+                  description: PDCP RX enable out-of-order delivery
+                  type: boolean
+                  default: false
+              additionalProperties: false
+          additionalProperties: false
+        f1u_cu_up:
+          description: F1-U parameters at CU_UP side
+          type: object
+          properties:
+            backoff_timer:
+              description: F1-U backoff timer (ms)
+              type: integer
+              default: 5
+            queue_size:
+              description: F1-U backoff timer (ms)
+              type: integer
+              default: 8192
+            batch_size:
+              description: F1-U backoff timer (ms)
+              type: integer
+              default: 256
+          additionalProperties: false
+      additionalProperties: false
+  ntn:
+    description: Global NTN configuration
+    type: object
+    properties:
+      satellites:
+        description: Globally-defined NTN satellites referenced by satellite_idx in cell ntn configs
+        type: array
+        items:
+          type: object
+          properties:
+            satellite_idx:
+              description: Satellite index. Required when defining a satellite object; optional when referencing or inline-defining a satellite, in which case it is mutually exclusive with epoch_timestamp, ephemeris_info, gateway_location and ta_info.
+              type: integer
+            epoch_timestamp:
+              description: "Epoch timestamp (Unix ms or ISO 8601: YYYY-MM-DDTHH:MM:SS[.mmm])"
+              type: string
+            propagator_type:
+              description: "Orbit propagator: rk4 or keplerian"
+              type: string
+              enum:
+                - rk4
+                - keplerian
+            ephemeris_info_ecef:
+              description: ECEF ephemeris
+              type: object
+              properties:
+                pos_x:
+                  description: X Position of the satellite [m]
+                  type: number
+                  minimum: -43620761.6
+                  maximum: 43620759.3
+                pos_y:
+                  description: Y Position of the satellite [m]
+                  type: number
+                  minimum: -43620761.6
+                  maximum: 43620759.3
+                pos_z:
+                  description: Z Position of the satellite [m]
+                  type: number
+                  minimum: -43620761.6
+                  maximum: 43620759.3
+                vel_x:
+                  description: X Velocity of the satellite [m/s]
+                  type: number
+                  minimum: -7864.32
+                  maximum: 7864.26
+                vel_y:
+                  description: Y Velocity of the satellite [m/s]
+                  type: number
+                  minimum: -7864.32
+                  maximum: 7864.26
+                vel_z:
+                  description: Z Velocity of the satellite [m/s]
+                  type: number
+                  minimum: -7864.32
+                  maximum: 7864.26
+              additionalProperties: false
+              required:
+                - pos_x
+                - pos_y
+                - pos_z
+                - vel_x
+                - vel_y
+                - vel_z
+            ephemeris_orbital:
+              description: Orbital ephemeris
+              type: object
+              properties:
+                semi_major_axis:
+                  description: Semi-major axis of the satellite [m]
+                  type: number
+                  minimum: 6500000
+                  maximum: 42998632.07
+                eccentricity:
+                  description: Eccentricity of the satellite [-]
+                  type: number
+                  minimum: 0
+                  maximum: 0.01500510825
+                periapsis:
+                  description: Periapsis of the satellite [rad]
+                  type: number
+                  minimum: 0
+                  maximum: 6.28407400155
+                longitude:
+                  description: Longitude of the satellites angle of ascending node [rad]
+                  type: number
+                  minimum: 0
+                  maximum: 6.28407400155
+                inclination:
+                  description: Inclination of the satellite [rad]
+                  type: number
+                  minimum: -1.57101850624
+                  maximum: 1.57101848283
+                mean_anomaly:
+                  description: Mean anomaly of the satellite [rad]
+                  type: number
+                  minimum: 0
+                  maximum: 6.28407400155
+              additionalProperties: false
+              required:
+                - semi_major_axis
+                - eccentricity
+                - periapsis
+                - longitude
+                - inclination
+                - mean_anomaly
+            gateway_location:
+              description: NTN gateway geodetic coordinates
+              type: object
+              properties:
+                latitude:
+                  description: Latitude [degree]
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                  default: 0
+                longitude:
+                  description: Longitude [degree]
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                  default: 0
+                altitude:
+                  description: Altitude [m]
+                  type: number
+                  minimum: -1000
+                  maximum: 20000
+                  default: 0
+              additionalProperties: false
+            ta_info:
+              description: TA info override (mutually exclusive with gateway_location)
+              type: object
+              properties:
+                ta_common:
+                  description: TA common
+                  type: number
+                  minimum: 0
+                  maximum: 270730
+                  default: 0
+                ta_common_drift:
+                  description: Drift rate of the common TA
+                  type: number
+                  minimum: -51.4606
+                  maximum: 51.4606
+                  default: 0
+                ta_common_drift_variant:
+                  description: Drift rate variation of the common TA
+                  type: number
+                  minimum: 0
+                  maximum: 0.57898
+                  default: 0
+                ta_common_offset:
+                  description: Constant offset added to TA common
+                  type: number
+                  minimum: 0
+                  maximum: 10000
+              additionalProperties: false
+          additionalProperties: false
+    additionalProperties: false
+  e2:
+    description: E2 parameters
+    type: object
+    properties:
+      enable_cu_cp_e2:
+        description: Enable CU E2 agent
+        type: boolean
+        default: false
+      addrs:
+        description: RIC addresses to be used for E2 interface. Multiple addresses can be specified for SCTP multi-homing. The '--addr' name is a deprecated alias and should not be used.
+        oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        default:
+          - 127.0.0.1
+      port:
+        description: RIC port
+        type: integer
+        minimum: 20000
+        maximum: 40000
+        default: 36421
+      bind_addrs:
+        description: Local bind addresses to be used for E2 interface. Multiple addresses can be specified for SCTP multi-homing. If left empty, implicit bind is performed. The '--bind_addr' name is a deprecated alias and should not be used.
+        oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        default:
+          - 127.0.0.1
+      sctp_rto_initial:
+        description: SCTP initial RTO value in milliseconds (-1 to use system default)
+        type: integer
+        default: 120
+      sctp_rto_min:
+        description: SCTP RTO min in milliseconds (-1 to use system default)
+        type: integer
+        default: 120
+      sctp_rto_max:
+        description: SCTP RTO max in milliseconds (-1 to use system default)
+        type: integer
+        default: 500
+      sctp_init_max_attempts:
+        description: SCTP init max attempts (-1 to use system default)
+        type: integer
+        default: 3
+      sctp_max_init_timeo:
+        description: SCTP max init timeout in milliseconds (-1 to use system default)
+        type: integer
+        default: 500
+      sctp_hb_interval:
+        description: SCTP heartbeat interval in milliseconds (-1 to use system default)
+        type: integer
+        default: 30000
+      sctp_assoc_max_retx:
+        description: SCTP association max retransmissions (-1 to use system default)
+        type: integer
+        default: 10
+      sctp_nodelay:
+        description: Send SCTP messages as soon as possible without any Nagle-like algorithm
+        type: boolean
+        default: false
+      e2sm_kpm_enabled:
+        description: Enable KPM service module
+        type: boolean
+        default: false
+      e2sm_rc_enabled:
+        description: Enable RC service module
+        type: boolean
+        default: false
+      e2sm_ccc_enabled:
+        description: Enable CCC service module
+        type: boolean
+        default: false
+      enable_cu_up_e2:
+        description: Enable CU-UP E2 agent
+        type: boolean
+        default: false
+    additionalProperties: false
+  gnb_cu_up_id:
+    description: gNB-CU-UP Id
+    type: integer
+    minimum: 0
+    maximum: 68719476735
+    default: 0
+additionalProperties: false

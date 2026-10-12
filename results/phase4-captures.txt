@@ -1,0 +1,2 @@
+-rw-r--r-- 1 tcpdump tcpdump 4142 Oct 13 00:06 /home/mohammad/projects/private-5g/captures/phase4_n3.pcap
+-rw-r--r-- 1 tcpdump tcpdump 2878 Oct 13 00:06 /home/mohammad/projects/private-5g/captures/phase4_sctp.pcap
