@@ -1,0 +1,19 @@
+Phase 3 Performance Results
+============================
+
+TCP iperf3 (3 runs, 20 seconds each):
+  Run 1: 2.35 GB, 1.01 Gbit/s, 18238 retransmissions
+  Run 2: 2.35 GB, 1.01 Gbit/s, 23612 retransmissions
+  Run 3: 2.35 GB, 1.01 Gbit/s, 20696 retransmissions
+
+UDP iperf3 (1 run, 20 seconds, 5 Mbps target):
+  11.9 MB, 5.00 Mbit/s, 0.207 ms jitter, 0/9274 loss (0%)
+
+ICMP ping (5 packets):
+  0% loss, RTT avg 1.13 ms
+
+Environment:
+  UE IP: 10.45.0.2
+  Namespace: ueransim-999700000000001-internet-psi1
+  Tunnel: uesimtun0
+  Gateway: 10.45.0.1 (ogstun)

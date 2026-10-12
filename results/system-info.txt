@@ -1,0 +1,22 @@
+Linux IdeaPad-5 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026 x86_64 GNU/Linux
+Distributor ID:	Ubuntu
+Description:	Ubuntu 26.04.1 LTS
+Release:	26.04
+Codename:	resolute
+8
+               total        used        free      shared  buff/cache   available
+Mem:            14Gi       6.0Gi       3.5Gi       1.1Gi       6.8Gi       8.9Gi
+Swap:          4.0Gi          0B       4.0Gi
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+wlp0s20f3        UP             192.168.1.102/24 fe80::75d5:fc76:b10a:bc3a/64 
+ogstun           UP             10.45.0.1/16 2001:db8:cafe::1/48 fe80::1f4d:1c22:a08c:d882/64 
+default via 192.168.1.1 dev wlp0s20f3 proto dhcp src 192.168.1.102 metric 600 
+10.45.0.0/16 dev ogstun proto kernel scope link src 10.45.0.1 
+10.45.0.0/16 dev ogstun proto static scope link 
+192.168.1.0/24 dev wlp0s20f3 proto kernel scope link src 192.168.1.102 metric 600 
+0:	from all lookup local
+32763:	from 10.45.0.5 lookup rt_uesimtun0
+32764:	from 10.45.0.4 lookup rt_uesimtun0
+32765:	from 10.45.0.3 lookup rt_uesimtun0
+32766:	from all lookup main
+32767:	from all lookup default
