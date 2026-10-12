@@ -1,0 +1,20 @@
+# Build artifacts
+build/
+cmake-build-*/
+
+# Temporary output
+*.log
+*.pcap
+*.pcapng
+*.tmp
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Local secrets and credentials
+.env
+.env.*
+secrets/
+private-keys/
