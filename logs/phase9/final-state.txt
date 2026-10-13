@@ -1,0 +1,47 @@
+=== Phase 9 stack state at 2026-10-13T19:14:13+03:30 ===
+
+--- RAN ---
+CU: 1
+DU: 1
+UE: 2
+
+--- Open5GS ---
+  open5gs-nrfd   active
+  open5gs-amfd   active
+  open5gs-smfd   active
+  open5gs-upfd   active
+  open5gs-upfd-edge active
+  open5gs-ausfd  active
+  open5gs-udmd   active
+  open5gs-udrd   active
+
+--- Monitoring ---
+  prometheus                   active
+  prometheus-node-exporter     active
+  grafana-server               active
+
+--- Listening ports ---
+LISTEN 0      100       10.200.1.1:4556       0.0.0.0:*    users:(("odu",pid=246472,fd=16))           
+LISTEN 0      4096               *:3000             *:*    users:(("grafana",pid=247332,fd=50))       
+LISTEN 0      4096               *:9095             *:*    users:(("prometheus",pid=240744,fd=6))     
+LISTEN 0      4096               *:9100             *:*    users:(("prometheus-node",pid=237169,fd=3))
+
+--- UE interfaces ---
+oaitun_ue1       UNKNOWN        10.45.0.3/24 fe80::1940:6118:1b8b:add1/64 
+oaitun_ue1p2     UNKNOWN        10.46.0.3/24 fe80::30ef:ee9d:ea60:54e/64 
+
+--- UPF TUN interfaces ---
+ogstun           UP             10.45.0.1/16 2001:db8:cafe::1/48 fe80::d9f2:6589:b4db:f037/64 
+ogstun2          UNKNOWN        10.46.0.1/16 fe80::ded3:5d7c:e3f6:17fb/64 
+
+--- Prometheus targets ---
+  node                         up
+  open5gs-upf-central          up
+  open5gs-upf-edge             up
+  prometheus                   up
+
+--- Data source health ---
+  Prometheus  type=prometheus  url=http://localhost:9095  uid=dg148jlnd3wg0d
+
+--- Dashboard list ---
+  Private 5G — Phase 9  url=/d/a4ql9t/private-5g-e28094-phase-9

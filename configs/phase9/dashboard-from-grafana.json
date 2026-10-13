@@ -1,0 +1,384 @@
+{
+    "meta": {
+        "type": "db",
+        "canSave": true,
+        "canEdit": true,
+        "canAdmin": true,
+        "canStar": true,
+        "canDelete": true,
+        "slug": "private-5g-e28094-phase-9",
+        "url": "/d/a4ql9t/private-5g-e28094-phase-9",
+        "expires": "0001-01-01T00:00:00Z",
+        "created": "2026-10-13T19:13:47+03:30",
+        "updated": "2026-10-13T19:13:47+03:30",
+        "updatedBy": "Anonymous",
+        "createdBy": "Anonymous",
+        "version": 1,
+        "hasAcl": false,
+        "isFolder": false,
+        "apiVersion": "v0alpha1",
+        "folderId": 0,
+        "folderUid": "",
+        "folderTitle": "General",
+        "folderUrl": "",
+        "provisioned": false,
+        "provisionedExternalId": "",
+        "annotationsPermissions": {
+            "dashboard": {
+                "canAdd": true,
+                "canEdit": true,
+                "canDelete": true
+            }
+        }
+    },
+    "dashboard": {
+        "description": "Phase 9 monitoring dashboard: UPF sessions, QoS flows, N3 GTP-U traffic, N4 session metrics, host CPU.",
+        "editable": true,
+        "id": 2349141595406336,
+        "panels": [
+            {
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "dg148jlnd3wg0d"
+                },
+                "description": "",
+                "fieldConfig": {
+                    "defaults": {
+                        "custom": {
+                            "fillOpacity": 10,
+                            "lineWidth": 2,
+                            "showPoints": "auto"
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                },
+                "id": 1,
+                "options": {
+                    "legend": {
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true
+                    },
+                    "tooltip": {
+                        "mode": "multi",
+                        "sort": "desc"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "fivegs_upffunction_upf_sessionnbr{upf=\"central\"}",
+                        "legendFormat": "UPF-A central (internet)",
+                        "refId": "A0"
+                    },
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "fivegs_upffunction_upf_sessionnbr{upf=\"edge\"}",
+                        "legendFormat": "UPF-B edge (factory)",
+                        "refId": "A1"
+                    }
+                ],
+                "title": "UPF Sessions (both)",
+                "type": "timeseries"
+            },
+            {
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "dg148jlnd3wg0d"
+                },
+                "description": "",
+                "fieldConfig": {
+                    "defaults": {
+                        "custom": {
+                            "fillOpacity": 10,
+                            "lineWidth": 2,
+                            "showPoints": "auto"
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                },
+                "id": 2,
+                "options": {
+                    "legend": {
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true
+                    },
+                    "tooltip": {
+                        "mode": "multi",
+                        "sort": "desc"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "fivegs_upffunction_upf_qosflows",
+                        "legendFormat": "{{dnn}} \u2014 QoS flows",
+                        "refId": "A0"
+                    }
+                ],
+                "title": "QoS Flows per DNN",
+                "type": "timeseries"
+            },
+            {
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "dg148jlnd3wg0d"
+                },
+                "description": "",
+                "fieldConfig": {
+                    "defaults": {
+                        "custom": {
+                            "fillOpacity": 10,
+                            "lineWidth": 2,
+                            "showPoints": "auto"
+                        },
+                        "unit": "pps"
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 8
+                },
+                "id": 3,
+                "options": {
+                    "legend": {
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true
+                    },
+                    "tooltip": {
+                        "mode": "multi",
+                        "sort": "desc"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "rate(fivegs_ep_n3_gtp_indatapktn3upf{upf=\"central\"}[1m])",
+                        "legendFormat": "UPF-A central",
+                        "refId": "A0"
+                    },
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "rate(fivegs_ep_n3_gtp_indatapktn3upf{upf=\"edge\"}[1m])",
+                        "legendFormat": "UPF-B edge",
+                        "refId": "A1"
+                    }
+                ],
+                "title": "N3 GTP-U Ingress (packets/s)",
+                "type": "timeseries"
+            },
+            {
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "dg148jlnd3wg0d"
+                },
+                "description": "",
+                "fieldConfig": {
+                    "defaults": {
+                        "custom": {
+                            "fillOpacity": 10,
+                            "lineWidth": 2,
+                            "showPoints": "auto"
+                        },
+                        "unit": "pps"
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 8
+                },
+                "id": 4,
+                "options": {
+                    "legend": {
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true
+                    },
+                    "tooltip": {
+                        "mode": "multi",
+                        "sort": "desc"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "rate(fivegs_ep_n3_gtp_outdatapktn3upf{upf=\"central\"}[1m])",
+                        "legendFormat": "UPF-A central",
+                        "refId": "A0"
+                    },
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "rate(fivegs_ep_n3_gtp_outdatapktn3upf{upf=\"edge\"}[1m])",
+                        "legendFormat": "UPF-B edge",
+                        "refId": "A1"
+                    }
+                ],
+                "title": "N3 GTP-U Egress (packets/s)",
+                "type": "timeseries"
+            },
+            {
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "dg148jlnd3wg0d"
+                },
+                "description": "",
+                "fieldConfig": {
+                    "defaults": {
+                        "custom": {
+                            "fillOpacity": 10,
+                            "lineWidth": 2,
+                            "showPoints": "auto"
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 16
+                },
+                "id": 5,
+                "options": {
+                    "legend": {
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true
+                    },
+                    "tooltip": {
+                        "mode": "multi",
+                        "sort": "desc"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "fivegs_upffunction_sm_n4sessionestabreq",
+                        "legendFormat": "{{upf}} \u2014 requests",
+                        "refId": "A0"
+                    },
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "fivegs_upffunction_sm_n4sessionreportsucc",
+                        "legendFormat": "{{upf}} \u2014 reports OK",
+                        "refId": "A1"
+                    }
+                ],
+                "title": "N4 Session Establishments",
+                "type": "timeseries"
+            },
+            {
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "dg148jlnd3wg0d"
+                },
+                "description": "",
+                "fieldConfig": {
+                    "defaults": {
+                        "custom": {
+                            "fillOpacity": 10,
+                            "lineWidth": 2,
+                            "showPoints": "auto"
+                        },
+                        "unit": "percent"
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 16
+                },
+                "id": 6,
+                "options": {
+                    "legend": {
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true
+                    },
+                    "tooltip": {
+                        "mode": "multi",
+                        "sort": "desc"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "dg148jlnd3wg0d"
+                        },
+                        "expr": "(1 - rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100",
+                        "legendFormat": "{{instance}} \u2014 CPU",
+                        "refId": "A0"
+                    }
+                ],
+                "title": "Host CPU \u2014 non-idle %",
+                "type": "timeseries"
+            }
+        ],
+        "refresh": "10s",
+        "schemaVersion": 39,
+        "tags": [
+            "private-5g",
+            "phase9",
+            "open5gs",
+            "ocudu"
+        ],
+        "time": {
+            "from": "now-15m",
+            "to": "now"
+        },
+        "timezone": "browser",
+        "title": "Private 5G \u2014 Phase 9",
+        "uid": "a4ql9t",
+        "version": 1
+    }
+}

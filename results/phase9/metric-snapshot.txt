@@ -1,0 +1,32 @@
+Phase 9 — Live metric snapshot at 2026-10-13T19:14:13.007528
+======================================================================
+
+upf_sessions_central: 1   [dnn=internet, instance=127.0.0.7:9090, job=open5gs-upf-central, upf=central]
+
+upf_sessions_edge: 1   [dnn=factory, instance=127.0.0.8:9091, job=open5gs-upf-edge, upf=edge]
+
+qos_flows: 1   [dnn=internet, exported_dnn=internet, instance=127.0.0.7:9090, job=open5gs-upf-central, upf=central]
+qos_flows: 1   [dnn=factory, exported_dnn=factory, instance=127.0.0.8:9091, job=open5gs-upf-edge, upf=edge]
+
+n3_ingress_central: 0   [dnn=internet, instance=127.0.0.7:9090, job=open5gs-upf-central, upf=central]
+
+n3_ingress_edge: 0   [dnn=factory, instance=127.0.0.8:9091, job=open5gs-upf-edge, upf=edge]
+
+n3_egress_central: 0   [dnn=internet, instance=127.0.0.7:9090, job=open5gs-upf-central, upf=central]
+
+n3_egress_edge: 0   [dnn=factory, instance=127.0.0.8:9091, job=open5gs-upf-edge, upf=edge]
+
+n4_requests: 2   [dnn=internet, instance=127.0.0.7:9090, job=open5gs-upf-central, upf=central]
+n4_requests: 2   [dnn=factory, instance=127.0.0.8:9091, job=open5gs-upf-edge, upf=edge]
+
+n4_reports_ok: 1   [dnn=internet, instance=127.0.0.7:9090, job=open5gs-upf-central, upf=central]
+n4_reports_ok: 0   [dnn=factory, instance=127.0.0.8:9091, job=open5gs-upf-edge, upf=edge]
+
+host_cpu_nonidle: 31.822222222221587   [cpu=0, instance=localhost:9100, job=node, mode=idle]
+host_cpu_nonidle: 26.844444444448335   [cpu=1, instance=localhost:9100, job=node, mode=idle]
+host_cpu_nonidle: 30.24444444444575   [cpu=2, instance=localhost:9100, job=node, mode=idle]
+host_cpu_nonidle: 27.933333333332698   [cpu=3, instance=localhost:9100, job=node, mode=idle]
+host_cpu_nonidle: 23.533333333333662   [cpu=4, instance=localhost:9100, job=node, mode=idle]
+host_cpu_nonidle: 25.8000000000013   [cpu=5, instance=localhost:9100, job=node, mode=idle]
+host_cpu_nonidle: 27.75555555555912   [cpu=6, instance=localhost:9100, job=node, mode=idle]
+host_cpu_nonidle: 26.733333333330755   [cpu=7, instance=localhost:9100, job=node, mode=idle]
