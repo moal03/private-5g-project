@@ -1,0 +1,153 @@
+# Phase 15 — Research Campaign: Consolidated Analysis
+Generated: 2026-10-13
+Repository: /home/mohammad/projects/private-5g
+
+This document consolidates the experimental results from all
+phases into a single analysis. Raw data is in the phase-specific
+results directories; this file provides the cross-phase view.
+
+Reports surveyed:
+  docs/phase11/phase-11-report.md  (572 lines)
+  docs/phase12/phase-12-report.md  (422 lines)
+  docs/phase13/phase-13-report.md  (337 lines)
+  docs/phase14/phase-14-report.md  (228 lines)
+  docs/phase6/phase-6-report.md  (508 lines)
+  docs/phase7/design.md  (96 lines)
+  docs/phase7/phase-7-report.md  (441 lines)
+  docs/phase8/phase-8-report.md  (333 lines)
+  docs/phase8/topology.md  (101 lines)
+  docs/phase9/phase-9-report.md  (408 lines)
+  docs/phase-3-report.md  (386 lines)
+  docs/phase-4-report.md  (597 lines)
+  docs/phase-5-report.md  (202 lines)
+
+
+==============================================================================
+  PHASE 6 — Network Slicing (RQ1)
+==============================================================================
+
+Slicing effect on URLLC probe latency (300-packet pings per trial).
+
+    Load   Metric   Baseline   Treatment      Delta    Delta%
+------------------------------------------------------------------------------
+     0M      p50      64.6ms       64.9ms      +0.3     +0.4%
+     0M      p95      84.6ms       84.8ms      +0.2     +0.2%
+     0M      p99      86.0ms       90.3ms      +4.3     +5.0%
+
+    15M      p50      32.0ms       32.3ms      +0.3     +1.0%
+    15M      p95      74.9ms       75.2ms      +0.3     +0.4%
+    15M      p99      85.1ms       86.0ms      +0.9     +1.1%
+
+    35M      p50      32.1ms       31.9ms      -0.3     -0.8%
+    35M      p95      66.2ms       65.7ms      -0.5     -0.8%
+    35M      p99      84.8ms       84.5ms      -0.3     -0.4%
+
+Interpretation: H1 (slicing improves isolation) is NOT supported.
+Deltas are within measurement noise across all load levels.
+
+==============================================================================
+  PHASE 7 — Multi-UPF and Edge Computing (RQ2)
+==============================================================================
+
+UPF-A (central) vs UPF-B (edge) same-host latency.
+
+ Trial   Central avg   Edge avg      Delta
+------------------------------------------------------------------------------
+     1        59.5ms     57.5ms      -2.1ms
+     2        54.7ms     57.7ms      +3.0ms
+     3        55.0ms     54.2ms      -0.8ms
+
+Central mean: 56.42 ms  (stdev 2.69)
+Edge    mean: 56.47 ms  (stdev 1.96)
+Delta (edge - central): +0.05 ms
+
+With simulated +30 ms backhaul delay on the central path:
+ Trial   Central +30       Edge      Delta
+------------------------------------------------------------------------------
+     1        90.5ms     60.2ms     -30.3ms
+     2        92.0ms     56.4ms     -35.6ms
+     3        87.3ms     57.9ms     -29.4ms
+
+Edge benefit with simulated distance: -31.77 ms
+
+Interpretation: H2 (edge reduces latency) is supported only
+when there is real backhaul delay to remove. On the same host,
+the difference is within measurement noise.
+
+==============================================================================
+  PHASE 8 — Traffic Engineering (RQ4 scalability indicator)
+==============================================================================
+
+Idle vs Loaded latency, four conditions:
+
+Condition                      avg     mdev
+------------------------------------------------------------------------------
+Control (idle)               77.4ms    21.1ms
+Same-UPF under load          65.4ms    13.1ms
+Cross-UPF (edge)             29.7ms    10.8ms
+Cross-UPF (central)          31.7ms    11.6ms
+
+Interpretation: The strongest positive result of the project.
+Same-UPF under load: probe competes with load, ~65 ms p50.
+Cross-UPF under load: probe isolated, ~30 ms p50.
+Isolation benefit: ~35 ms (53% reduction). Symmetric across
+directions (edge probe 29.7 ms, central probe 31.7 ms).
+
+==============================================================================
+  PHASE 11 — Fault Injection and Resilience (RQ5)
+==============================================================================
+
+Six controlled faults, with a parallel control path each time.
+
+Fault      Description                      Detection             Recovery
+------------------------------------------------------------------------------
+F01        Application HTTP failure            0.36 s                0.5 s
+F05        UE route blackhole               immediate instant on route restore
+F02        netem delay 50ms                 immediate full on qdisc removal
+F03        netem loss 1%                    tail only full on qdisc removal
+F04        tbf 2mbit cap                    immediate full on qdisc removal
+F06        UPF-B process stop                  2.95 s manual UE restart required
+
+Key findings:
+- Layer separation is clean: application, routing, delay, loss,
+  bandwidth, and core-function faults each affect only their layer.
+- F06 (UPF-B stop): UPF-A path stayed at 100% success for the full
+  60-second probe window AND remained healthy 30 minutes later.
+- F06 (UPF-B restart): the SMF did not re-create the factory PDU
+  session. Manual UE restart was required for recovery.
+
+Interpretation: Multi-UPF isolation is proven under real
+core-function failure. Automatic session recovery is not.
+This is a defensible negative finding.
+
+==============================================================================
+  CROSS-PHASE CONCLUSION
+==============================================================================
+
+The project produced a working private 5G testbed with:
+  - 5G SA core (Open5GS, two UPFs selected by DNN)
+  - O-RAN-oriented RAN (OCUDU CU + DU with E2 agent)
+  - Software UE (OAI, band n78 TDD, 30 kHz SCS)
+  - Monitoring (Prometheus + Grafana, live dashboard)
+  - Near-RT RIC (FlexRIC, E2 SCTP established)
+  - Custom xApp code (Python and C)
+
+Summary of experimental outcomes:
+  RQ1 (slicing):      H1 not supported. Slice separation at the core
+                      does not measurably isolate latency.
+  RQ2 (edge):         H2 supported only under simulated backhaul
+                      delay. Same-host edge UPF gives no benefit.
+  RQ3 (adaptive):     Not tested in production form. RC control
+                      pipeline reached the DU but ASN.1 decoding failed.
+  RQ4 (scalability):  Throughput ceiling at ~8.6 Mbps (UE uplink).
+                      Zero loss up to that ceiling.
+  RQ5 (resilience):   Strong isolation under fault. No automatic
+                      session recovery after UPF restart.
+  RQ6 (modeling):     Not evaluated (ns-3 / Sionna not run).
+
+Strongest positive result: cross-UPF isolation under load (Phase 8).
+Strongest negative result: slicing provides no core-level isolation
+  (Phase 6), and UPF restart does not restore sessions (Phase 11).
+Documented software limitations: KPM indications not emitted by
+  this OCUDU build (Phase 12); ASN.1 codec mismatch prevents RC
+  control decoding (Phase 13).
