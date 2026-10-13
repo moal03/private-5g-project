@@ -1,0 +1,76 @@
+==========================================================
+  Testbed Verification
+  2026-10-13T21:44:38+03:30
+  Host: IdeaPad-5
+==========================================================
+
+=== Host ===
+  [PASS] Kernel 7.x present
+  [PASS] 8 or more CPU threads
+  [PASS] At least 6 GiB RAM free
+  [PASS] At least 50 GiB disk free on /
+
+=== Kernel prerequisites ===
+  [PASS] /dev/net/tun exists
+  [PASS] sctp kernel module loaded
+  [PASS] ip_forward enabled
+
+=== Open5GS core ===
+  [PASS] AMF active
+  [PASS] SMF active
+  [PASS] UPF-A active
+  [PASS] UPF-B (edge) active
+  [PASS] AUSF active
+  [PASS] UDM active
+  [PASS] UDR active
+
+=== Open5GS listeners ===
+  [PASS] AMF N2 listener on 38412
+  [PASS] SMF PFCP listener on 8805
+  [PASS] UPF-A GTP-U on 127.0.0.7:2152
+  [PASS] UPF-B GTP-U on 127.0.0.8:2152
+
+=== Open5GS TUN interfaces ===
+  [PASS] ogstun (UPF-A) up with 10.45.0.1
+  [PASS] ogstun2 (UPF-B) present
+
+=== RAN (OCUDU) ===
+  [PASS] CU process running
+  [PASS] DU process running
+  [PASS] CU F1-C listener on 38472
+  [PASS] DU ZMQ port 4556 listening
+  [PASS] DU F1 Setup completed
+  [PASS] DU cell scheduling active
+
+=== UE ===
+  [PASS] UE process running
+  [PASS] UE namespace exists
+  [PASS] oaitun_ue1 present (internet)
+  [PASS] oaitun_ue1p2 present (factory)
+
+=== Data path ===
+  [SKIP] UE -> central (10.60.0.10) reachable (optional; got: )
+  [SKIP] UE -> edge (10.70.0.10) reachable (optional; got: )
+
+=== Monitoring ===
+  [PASS] Prometheus active
+  [PASS] node-exporter active
+  [PASS] Grafana active
+  [PASS] Prometheus on 9095
+  [PASS] node-exporter on 9100
+  [PASS] Grafana on 3000
+
+=== RIC (optional) ===
+  [PASS] FlexRIC nearRT-RIC running
+  [PASS] RIC E2 listener on 36421
+
+==========================================================
+  SUMMARY
+==========================================================
+  Total : 40
+  PASS  : 38
+  FAIL  : 0
+  SKIP  : 2 (optional checks)
+
+  RESULT: Verification passed.
+          All required components are operational.

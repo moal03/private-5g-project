@@ -1,0 +1,95 @@
+# Environment Snapshot — 2026-10-13T21:40:20+03:30
+
+## Host
+hostname:    IdeaPad-5
+user:        mohammad
+kernel:      7.0.0-38-generic
+arch:        x86_64
+
+## OS
+NAME="Ubuntu"
+VERSION="26.04.1 LTS (Resolute Raccoon)"
+VERSION_CODENAME=resolute
+ID=ubuntu
+
+## CPU
+CPU(s):                                  8
+Model name:                              11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz
+Thread(s) per core:                      2
+Core(s) per socket:                      4
+Socket(s):                               1
+CPU(s) scaling MHz:                      75%
+CPU max MHz:                             4700.0000
+CPU min MHz:                             400.0000
+
+## Memory
+               total        used        free      shared  buff/cache   available
+Mem:            14Gi       8.7Gi       1.7Gi       531Mi       5.4Gi       6.2Gi
+Swap:          4.0Gi          0B       4.0Gi
+
+## Disk
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda5       304G   57G  232G  20% /
+tmpfs           7.5G  2.3M  7.5G   1% /tmp
+/dev/sda5       304G   57G  232G  20% /
+
+## Kernel modules relevant to the testbed
+sctp_diag              16384  0
+inet_diag              24576  5 tcp_diag,sctp_diag,mptcp_diag,raw_diag,udp_diag
+sctp                  516096  67 sctp_diag
+ip6_udp_tunnel         16384  1 sctp
+udp_tunnel             36864  1 sctp
+
+## Kernel tunables
+net.ipv4.ip_forward = 1
+net.core.rmem_max = 50000000
+net.core.wmem_max = 1048576
+
+## Active network interfaces
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+wlp0s20f3        UP             192.168.1.102/24 fe80::75d5:fc76:b10a:bc3a/64 
+ogstun           UP             10.45.0.1/16 2001:db8:cafe::1/48 fe80::e0a3:bf04:e99f:75e8/64 
+ogstun2          DOWN           
+v-eth1@if5       UP             10.200.1.1/24 fe80::683c:5aff:fe1e:fc52/64 
+
+## Listening TCP/UDP ports (relevant)
+udp   UNCONN 0      0                                  127.0.0.8:8805       0.0.0.0:*    users:(("open5gs-upfd",pid=7348,fd=8))   
+udp   UNCONN 0      0                                  127.0.0.4:8805       0.0.0.0:*    users:(("open5gs-smfd",pid=3658,fd=19))  
+udp   UNCONN 0      0                                  127.0.0.7:8805       0.0.0.0:*    users:(("open5gs-upfd",pid=3660,fd=8))   
+udp   UNCONN 0      0                                  127.0.0.3:8805       0.0.0.0:*    users:(("open5gs-sgwcd",pid=3656,fd=7))  
+udp   UNCONN 0      0                                  127.0.0.6:8805       0.0.0.0:*    users:(("open5gs-sgwud",pid=3657,fd=6))  
+udp   UNCONN 0      0                                 127.0.0.23:2152       0.0.0.0:*    users:(("odu",pid=7642,fd=9))            
+udp   UNCONN 0      0                                 127.0.0.13:2152       0.0.0.0:*    users:(("odu",pid=7642,fd=8))            
+udp   UNCONN 0      0                                  127.0.0.3:2152       0.0.0.0:*    users:(("odu",pid=7642,fd=7))            
+udp   UNCONN 0      0                                  127.0.0.1:2152       0.0.0.0:*    users:(("ocu",pid=7611,fd=11))           
+udp   UNCONN 0      0                                 127.0.0.22:2152       0.0.0.0:*    users:(("ocu",pid=7611,fd=10))           
+udp   UNCONN 0      0                                 127.0.0.12:2152       0.0.0.0:*    users:(("ocu",pid=7611,fd=9))            
+udp   UNCONN 0      0                                  127.0.0.2:2152       0.0.0.0:*    users:(("ocu",pid=7611,fd=8))            
+udp   UNCONN 0      0                                  127.0.0.8:2152       0.0.0.0:*    users:(("open5gs-upfd",pid=7348,fd=9))   
+udp   UNCONN 0      0                                  127.0.0.4:2152       0.0.0.0:*    users:(("open5gs-smfd",pid=3658,fd=18))  
+udp   UNCONN 0      0                                  127.0.0.7:2152       0.0.0.0:*    users:(("open5gs-upfd",pid=3660,fd=9))   
+udp   UNCONN 0      0                                  127.0.0.6:2152       0.0.0.0:*    users:(("open5gs-sgwud",pid=3657,fd=7))  
+tcp   LISTEN 0      4096                                       *:9095             *:*    users:(("prometheus",pid=1506,fd=6))     
+tcp   LISTEN 0      4096                                       *:9100             *:*    users:(("prometheus-node",pid=1505,fd=3))
+tcp   LISTEN 0      4096                                       *:3000             *:*    users:(("grafana",pid=3650,fd=38))       
+
+## Git state
+c6062c1e48335513feb96002d7cb244667e690e4
+?? results/phase24/
+
+## Toolchain versions
+gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+gcc-13 (Ubuntu 13.4.0-10ubuntu1) 13.4.0
+cmake version 4.2.3
+Python 3.14.4
+SWIG Version 4.4.0
+
+## Key application versions (if running)
+Open5GS:        not in PATH
+Prometheus:     prometheus, version 2.53.5+ds1 (branch: debian/sid, revision: 2.53.5+ds1-3)
+Grafana:        Version 13.2.3 (commit: 90ffed056f0884267356c12a0eeb72a022af53f1, branch: release-13.2.3#patched)
+OCUDU CU:       44706552 /home/mohammad/projects/ocudu-dev/build/apps/cu/ocu
+OCUDU DU:       38658712 /home/mohammad/projects/ocudu-dev/build/apps/du/odu
+OAI UE:         49041712 /home/mohammad/projects/duranta-oai/cmake_targets/duranta-nrue/build/nr-uesoftmodem
+FlexRIC RIC:    3653696 /usr/local/bin/flexric/ric/nearRT-RIC
