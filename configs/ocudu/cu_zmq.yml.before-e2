@@ -1,0 +1,58 @@
+# OCUDU CU configuration for Phase 4 integration with Open5GS
+# Software-radio (ZeroMQ) test setup, paired with the OCUDU DU.
+
+gnb_id: 411
+gnb_id_bit_length: 22
+ran_node_name: ocudu-cu
+
+log:
+  filename: /tmp/ocudu-cu.log
+  all_level: info
+
+cu_cp:
+  amf:
+    addrs:
+      - 127.0.0.5
+    port: 38412
+    bind_addrs:
+      - 127.0.0.1
+    supported_tracking_areas:
+      - tac: 1
+        plmn_list:
+          - plmn: "99970"
+            tai_slice_support_list:
+              - sst: 1
+                sd: 1
+              - sst: 1
+                sd: 2
+
+  f1ap:
+    bind_addrs:
+      - 127.0.0.1
+
+cu_up:
+  f1u:
+    bind_port: 2152
+    peer_port: 2152
+    socket:
+      - bind_addr: 127.0.0.2
+        ext_addr: 127.0.0.2
+      - bind_addr: 127.0.0.12
+        ext_addr: 127.0.0.12
+        sst: 1
+        sd: 1
+        five_qi: 9
+      - bind_addr: 127.0.0.22
+        ext_addr: 127.0.0.22
+        sst: 1
+        sd: 2
+        five_qi: 9
+  ngu:
+    socket:
+      - bind_addr: 127.0.0.1
+
+pcap:
+  ngap_enable: false
+  f1ap_enable: false
+  f1u_enable: false
+  e1ap_enable: false
