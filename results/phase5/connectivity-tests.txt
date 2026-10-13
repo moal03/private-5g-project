@@ -1,0 +1,46 @@
+=== Phase 5 connectivity test suite ===
+
+=== Test 1: UE → Internet gateway (10.45.0.1) ===
+Expected: PASS (Phase 4 path still works)
+PING 10.45.0.1 (10.45.0.1) 56(84) bytes of data.
+64 bytes from 10.45.0.1: icmp_seq=1 ttl=64 time=117 ms
+64 bytes from 10.45.0.1: icmp_seq=2 ttl=64 time=68.5 ms
+64 bytes from 10.45.0.1: icmp_seq=3 ttl=64 time=67.5 ms
+
+--- 10.45.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 67.535/84.384/117.162/23.180 ms
+
+=== Test 2: UE → Factory server (10.60.0.10) via factory DNN ===
+Expected: PASS (factory path works)
+PING 10.60.0.10 (10.60.0.10) from 10.46.0.2 oaitun_ue1p2: 56(84) bytes of data.
+64 bytes from 10.60.0.10: icmp_seq=1 ttl=63 time=75.8 ms
+64 bytes from 10.60.0.10: icmp_seq=2 ttl=63 time=73.1 ms
+64 bytes from 10.60.0.10: icmp_seq=3 ttl=63 time=56.5 ms
+
+--- 10.60.0.10 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 56.474/68.429/75.754/8.524 ms
+
+=== Test 3: UE → Factory server forced via INTERNET DNN ===
+Expected: FAIL (isolation enforced by firewall)
+PING 10.60.0.10 (10.60.0.10) 56(84) bytes of data.
+
+--- 10.60.0.10 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2057ms
+
+
+=== Test 4: HTTP via factory DNN ===
+Expected: PASS (returns HTTP listing)
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+
+=== Test 5: Firewall counter (should show dropped packets from Test 3) ===
+table inet filter {
+	chain forward {
+		type filter hook forward priority filter; policy accept;
+		ip saddr 10.45.0.0/16 ip daddr 10.60.0.0/24 counter packets 6 bytes 504 drop
+		ip saddr 10.60.0.0/24 ip daddr 10.45.0.0/16 counter packets 0 bytes 0 drop
+	}
+}

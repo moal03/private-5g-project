@@ -1,0 +1,60 @@
+[
+  {
+    _id: ObjectId('6accfc4faba9dc3b002084be'),
+    imsi: '999700000000001',
+    security: {
+      k: '465B5CE8B199B49FAA5F0A2EE238A6BC',
+      op: null,
+      opc: 'E8ED289DEBA952E4283B54E88E6183CA',
+      amf: '8000',
+      sqn: Long('961')
+    },
+    ambr: { downlink: { value: 1, unit: 3 }, uplink: { value: 1, unit: 3 } },
+    slice: [
+      {
+        sst: 1,
+        sd: '000001',
+        default_indicator: true,
+        session: [
+          {
+            name: 'internet',
+            type: 3,
+            qos: {
+              index: 9,
+              arp: {
+                priority_level: 8,
+                pre_emption_capability: 1,
+                pre_emption_vulnerability: 1
+              }
+            },
+            ambr: {
+              downlink: { value: 1, unit: 3 },
+              uplink: { value: 1, unit: 3 }
+            }
+          },
+          {
+            name: 'factory',
+            type: 3,
+            qos: {
+              index: 9,
+              arp: {
+                priority_level: 8,
+                pre_emption_capability: 1,
+                pre_emption_vulnerability: 1
+              }
+            },
+            ambr: {
+              downlink: { value: 1, unit: 3 },
+              uplink: { value: 1, unit: 3 }
+            }
+          }
+        ]
+      }
+    ],
+    access_restriction_data: 32,
+    subscriber_status: 0,
+    network_access_mode: 0,
+    subscribed_rau_tau_timer: 12,
+    imeisv: '6754567890123413'
+  }
+]

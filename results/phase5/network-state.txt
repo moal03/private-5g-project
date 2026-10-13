@@ -1,0 +1,51 @@
+=== Date ===
+Tue Oct 13 02:48:59 PM +0330 2026
+
+=== Namespaces ===
+factory-app (id: 1)
+ue1 (id: 0)
+
+=== UE namespace interfaces ===
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+oaitun_ue1       UNKNOWN        10.45.0.2/24 fe80::35c9:4990:cedb:2263/64 
+oaitun_ue1p2     UNKNOWN        10.46.0.2/24 fe80::d9f3:bd9a:45b4:c612/64 
+v-ue1@if8        UP             10.200.1.2/24 fe80::b8fc:bfff:feb3:1bc9/64 
+
+=== UE namespace routes ===
+10.45.0.0/24 dev oaitun_ue1 proto kernel scope link src 10.45.0.2 
+10.46.0.0/24 dev oaitun_ue1p2 proto kernel scope link src 10.46.0.2 
+10.60.0.0/24 dev oaitun_ue1p2 scope link 
+10.200.1.0/24 dev v-ue1 proto kernel scope link src 10.200.1.2 
+
+=== factory-app namespace interfaces ===
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+factory-ns@if10  UP             10.60.0.10/24 fe80::2c0e:27ff:fe69:e93/64 
+
+=== factory-app namespace routes ===
+10.46.0.0/16 via 10.60.0.1 dev factory-ns 
+10.60.0.0/24 dev factory-ns proto kernel scope link src 10.60.0.10 
+
+=== ogstun (UPF) addresses ===
+    inet 10.45.0.1/16 brd 10.45.255.255 scope global ogstun
+    inet 10.46.0.1/16 scope global ogstun
+
+=== Host routes to UE and factory pools ===
+10.45.0.0/16 dev ogstun proto kernel scope link src 10.45.0.1 
+10.45.0.0/16 dev ogstun proto static scope link 
+10.46.0.0/16 dev ogstun proto kernel scope link src 10.46.0.1 
+10.60.0.0/24 dev factory-host proto kernel scope link src 10.60.0.1 
+local 10.45.0.1 dev ogstun table local proto kernel scope host src 10.45.0.1 
+broadcast 10.45.255.255 dev ogstun table local proto kernel scope link src 10.45.0.1 
+local 10.46.0.1 dev ogstun table local proto kernel scope host src 10.46.0.1 
+broadcast 10.46.255.255 dev ogstun table local proto kernel scope link src 10.46.0.1 
+local 10.60.0.1 dev factory-host table local proto kernel scope host src 10.60.0.1 
+broadcast 10.60.0.255 dev factory-host table local proto kernel scope link src 10.60.0.1 
+
+=== nftables rules with counters ===
+table inet filter {
+	chain forward {
+		type filter hook forward priority filter; policy accept;
+		ip saddr 10.45.0.0/16 ip daddr 10.60.0.0/24 counter packets 3 bytes 252 drop
+		ip saddr 10.60.0.0/24 ip daddr 10.45.0.0/16 counter packets 0 bytes 0 drop
+	}
+}
