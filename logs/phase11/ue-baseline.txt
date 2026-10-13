@@ -1,0 +1,15 @@
+=== UE interfaces ===
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+v-ue1@if8        UP             10.200.1.2/24 fe80::b8fc:bfff:feb3:1bc9/64 
+oaitun_ue1       UNKNOWN        10.45.0.3/24 fe80::1940:6118:1b8b:add1/64 
+oaitun_ue1p2     UNKNOWN        10.46.0.3/24 fe80::30ef:ee9d:ea60:54e/64 
+
+=== UE routes ===
+10.45.0.0/24 dev oaitun_ue1 proto kernel scope link src 10.45.0.3 
+10.46.0.0/24 dev oaitun_ue1p2 proto kernel scope link src 10.46.0.3 
+10.60.0.0/24 dev oaitun_ue1 scope link 
+10.70.0.0/24 dev oaitun_ue1p2 scope link 
+10.200.1.0/24 dev v-ue1 proto kernel scope link src 10.200.1.2 
+
+=== UE neighbor table ===
+10.200.1.1 dev v-ue1 lladdr 6a:3c:5a:1e:fc:52 REACHABLE 

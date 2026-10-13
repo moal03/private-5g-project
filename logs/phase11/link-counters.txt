@@ -1,0 +1,43 @@
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    RX:    bytes  packets errors dropped  missed   mcast           
+    113560346300 14682756      0       0       0       0 
+    TX:    bytes  packets errors dropped carrier collsns           
+    113560346300 14682756      0       0       0       0 
+2: wlp0s20f3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DORMANT group default qlen 1000
+    link/ether 28:d0:ea:fc:6e:e9 brd ff:ff:ff:ff:ff:ff
+    RX:  bytes packets errors dropped  missed   mcast           
+    1030218490 1073171      0       0       0       0 
+    TX:  bytes packets errors dropped carrier collsns           
+      86448042  586355      0       0       0       0 
+    altname wlx28d0eafc6ee9
+3: ogstun: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1400 qdisc fq_codel state UP mode DEFAULT group default qlen 500
+    link/none 
+    RX:  bytes packets errors dropped  missed   mcast           
+    2052829112 1526221      0       0       0       0 
+    TX:  bytes packets errors dropped carrier collsns           
+      17346871  305473      0       0       0       0 
+8: v-eth1@if7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 6a:3c:5a:1e:fc:52 brd ff:ff:ff:ff:ff:ff link-netns ue1
+    RX:     bytes   packets errors dropped  missed   mcast           
+    1347452094950 100092784      0       0       0       0 
+    TX:     bytes   packets errors dropped carrier collsns           
+    1347359952294  98971506      0       1       0       0 
+10: factory-host@if9: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether ea:f1:81:f0:f5:74 brd ff:ff:ff:ff:ff:ff link-netns factory-app
+    RX:  bytes packets errors dropped  missed   mcast           
+      20076898  282416      0       0       0       0 
+    TX:  bytes packets errors dropped carrier collsns           
+     952854083  719792      0       1       0       0 
+11: ogstun2: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UNKNOWN mode DEFAULT group default qlen 500
+    link/none 
+    RX:  bytes packets errors dropped  missed   mcast           
+     728718771  498657      0       0       0       0 
+    TX:  bytes packets errors dropped carrier collsns           
+      13688647  246817      0       0       0       0 
+13: edge-host@if12: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 26:4a:62:39:91:52 brd ff:ff:ff:ff:ff:ff link-netns edge-app
+    RX:  bytes packets errors dropped  missed   mcast           
+      17148721  246915      0       0       0       0 
+    TX:  bytes packets errors dropped carrier collsns           
+     735711561  498817      0       1       0       0 

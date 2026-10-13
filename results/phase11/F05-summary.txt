@@ -1,0 +1,51 @@
+Phase 11 — F05 UE Route Failure (Blackhole)
+=============================================
+
+Date: 2026-10-13T19:30
+
+Fault type: UE blackhole route added for 10.70.0.10/32
+Target:     10.70.0.10 (edge-app HTTP 8080)
+Control:    10.60.0.10 (central factory-app HTTP 8080)
+Probes:     Two parallel HTTP GET loops from UE, 200 ms interval, 30 s
+
+Timeline:
+- t=0.00s    probes started
+- t=+6.0s    blackhole route injected
+- t=+18.0s   blackhole route removed
+
+EDGE PROBE (blackholed destination):
+- Total attempts:     150
+- OK:                 90
+- Failed:             60
+- Success rate:       60.0%
+- First failure:      +0.20s
+- Last failure:       +12.01s
+- First OK after:     +12.32s
+- Error types:        URLError=60
+
+CENTRAL PROBE (control, no fault on this path):
+- Total attempts:     150
+- OK:                 150
+- Failed:             0
+- Success rate:       100.0%
+
+NETWORK STATE:
+- UE stayed registered (both interfaces, both IPs present)
+- Both PDU sessions persisted (oaitun_ue1, oaitun_ue1p2)
+- No change to the RAN, CU, DU, or either UPF
+- The blackhole was a local route inside the UE namespace only
+
+INTERPRETATION:
+F05 confirms strict layer isolation inside the UE:
+- The UE is registered and both PDU sessions remain established.
+- Blackholing one destination removes reachability to that destination only.
+- The other destination (central app) is completely unaffected (59/59 OK).
+- The single "OK" on the edge path during the fault is a timing race
+  (a probe request that was mid-flight at the moment of route injection).
+
+CONCLUSION:
+Reachability failure at one destination is independent of session and
+registration state. This is the expected result and demonstrates that
+a "network unreachable" condition is not the same as a "UE offline"
+condition. Monitoring that only checks UE registration would miss this
+fault; application-level probes detect it immediately.

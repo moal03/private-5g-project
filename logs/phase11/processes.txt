@@ -1,0 +1,30 @@
+=== RAN processes ===
+root      225606 10.6  3.9 2771332 622548 ?      Ssl  16:54  16:07 ./build/apps/cu/ocu -c /home/mohammad/projects/private-5g/configs/ocudu/cu_zmq.yml
+root      246472  137 16.2 4018060 2531732 ?     Ssl  19:07  23:55 ./build/apps/du/odu -c /home/mohammad/projects/private-5g/configs/ocudu/du_zmq.yml
+root      246531 19.2  2.1 2499496 342016 ?      SLsl 19:08   3:16 ./nr-uesoftmodem -O /home/mohammad/projects/private-5g/configs/ocudu/oaiue_zmq.baseline.conf
+root      246532  0.0  0.0  27728  4068 ?        S    19:08   0:00 ./nr-uesoftmodem -O /home/mohammad/projects/private-5g/configs/ocudu/oaiue_zmq.baseline.conf
+
+=== Open5GS services ===
+  open5gs-amfd.service             loaded active running Open5GS AMF Daemon
+  open5gs-ausfd.service            loaded active running Open5GS AUSF Daemon
+  open5gs-bsfd.service             loaded active running Open5GS BSF Daemon
+  open5gs-hssd.service             loaded active running Open5GS HSS Daemon
+  open5gs-mmed.service             loaded active running Open5GS MME Daemon
+  open5gs-nrfd.service             loaded active running Open5GS NRF Daemon
+  open5gs-nssfd.service            loaded active running Open5GS NSSF Daemon
+  open5gs-pcfd.service             loaded active running Open5GS PCF Daemon
+  open5gs-pcrfd.service            loaded active running Open5GS PCRF Daemon
+  open5gs-scpd.service             loaded active running Open5GS SCP Daemon
+  open5gs-seppd.service            loaded active running Open5GS SEPP Daemon
+  open5gs-sgwcd.service            loaded active running Open5GS SGW-C Daemon
+  open5gs-sgwud.service            loaded active running Open5GS SGW-U Daemon
+  open5gs-smfd.service             loaded active running Open5GS SMF Daemon
+  open5gs-udmd.service             loaded active running Open5GS UDM Daemon
+  open5gs-udrd.service             loaded active running Open5GS UDR Daemon
+  open5gs-upfd-edge.service        loaded active running Open5GS UPF Edge Daemon (edge-side UPF for factory DNN)
+  open5gs-upfd.service             loaded active running Open5GS UPF Daemon
+
+=== Monitoring services ===
+  grafana-server.service           loaded active running Grafana instance
+  prometheus-node-exporter.service loaded active running Prometheus exporter for machine metrics
+  prometheus.service               loaded active running Monitoring system and time series database

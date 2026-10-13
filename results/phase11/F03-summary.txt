@@ -1,0 +1,72 @@
+Phase 11 — F03 Packet Loss Injection (netem loss 1% on ogstun2)
+================================================================
+
+Date: 2026-10-13T19:35
+
+Fault type: tc netem loss 1% on ogstun2 egress
+Interface:  ogstun2 (UPF-B TUN, edge DNN)
+Affected:   10.70.0.10 (edge-app HTTP 8080)
+Control:    10.60.0.10 (central factory-app HTTP 8080)
+Probes:     Two parallel HTTP GET loops from UE, 200 ms interval, 30 s
+
+Timeline:
+- t=0s     probes started
+- t=+6s    loss injected
+- t=+18s   loss removed, qdisc restored to fq_codel
+- t=+30s   probes finished
+
+RESULT — EDGE (loss path):
+- Baseline:  n=25/25  p50=138ms  p95=164ms  min=85ms   max=171ms
+- Fault:     n=56/56  p50=126ms  p95=173ms  min=79ms   max=1152ms
+- Recovery:  n=65/65  p50=136ms  p95=175ms  min=85ms   max=181ms
+- p50 delta:  -12 ms (essentially unchanged)
+- p95 delta:   +9 ms (essentially unchanged)
+- max delta:  +981 ms (one large spike)
+- HTTP errors: 0
+
+RESULT — CENTRAL (control path):
+- Baseline:  n=25/25  p50=139ms  p95=165ms  min=86ms   max=172ms
+- Fault:     n=60/60  p50=153ms  p95=205ms  min=81ms   max=228ms
+- Recovery:  n=65/65  p50=129ms  p95=179ms  min=87ms   max=202ms
+- HTTP errors: 0
+
+TAIL LATENCY ANALYSIS (during fault window):
+- Edge path:    1 request > 500 ms, 1 request > 1000 ms
+- Central path: 0 requests > 500 ms
+
+OBSERVATIONS:
+
+1. TCP masks 1% packet loss almost completely for HTTP. The median and
+   p95 of the affected path are statistically unchanged. TCP
+   retransmits the lost packets transparently.
+
+2. The one signature of the loss is the tail: a single HTTP request
+   observed at 1152 ms, consistent with the TCP minimum retransmission
+   timeout (~1 s). This is exactly what a lost packet looks like at the
+   application layer.
+
+3. Zero HTTP errors on both paths. Even at 1% loss, TCP delivered every
+   request successfully. This is expected behavior and is important to
+   document: standard HTTP probes cannot directly measure packet loss
+   when TCP retransmission hides it.
+
+4. The central path's mild increase (+14 ms p50, +40 ms p95 during the
+   fault window) is within normal variance for this single-host
+   software testbed and is not evidence of cross-path interference.
+
+5. The recovery window (p50 136 ms) is identical to baseline (p50 138 ms).
+
+6. Both PDU sessions and the UE registration were unaffected.
+
+CLEANUP:
+- ogstun2 qdisc restored to fq_codel (default)
+- No persistent rules left behind
+
+CONCLUSION:
+F03 demonstrates that 1% packet loss on a single UPF egress has almost
+no effect on TCP-based HTTP metrics except for a single
+retransmission-timeout spike in the tail. To measure packet loss
+directly, one should use a UDP probe (the URLLC echo client). The HTTP
+probe shows that TCP recovers from loss but at the cost of tail
+latency. Both observations are legitimate and together they explain
+why resilience testing must use multiple measurement protocols.

@@ -1,0 +1,7 @@
+qdisc noqueue 0: dev lo root refcnt 2 
+qdisc noqueue 0: dev wlp0s20f3 root refcnt 2 
+qdisc fq_codel 0: dev ogstun root refcnt 2 limit 10240p flows 1024 quantum 1400 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64 
+qdisc noqueue 0: dev v-eth1 root refcnt 2 
+qdisc noqueue 0: dev factory-host root refcnt 2 
+qdisc fq_codel 0: dev ogstun2 root refcnt 2 limit 10240p flows 1024 quantum 1500 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64 
+qdisc noqueue 0: dev edge-host root refcnt 2 

@@ -1,0 +1,9 @@
+=== factory-app (central, 10.60.0.10) ===
+LISTEN 0      4096      10.60.0.10:5201      0.0.0.0:*    users:(("iperf3",pid=227040,fd=3)) 
+LISTEN 0      5         10.60.0.10:8080      0.0.0.0:*    users:(("python3",pid=216858,fd=3))
+UNCONN 0      0         10.60.0.10:9200      0.0.0.0:*    users:(("python3",pid=217099,fd=3))
+
+=== edge-app (edge, 10.70.0.10) ===
+LISTEN 0      4096      10.70.0.10:5201      0.0.0.0:*    users:(("iperf3",pid=227082,fd=3)) 
+LISTEN 0      5         10.70.0.10:8080      0.0.0.0:*    users:(("python3",pid=226405,fd=3))
+UNCONN 0      0         10.70.0.10:9200      0.0.0.0:*    users:(("python3",pid=226503,fd=3))

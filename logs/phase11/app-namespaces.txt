@@ -1,0 +1,12 @@
+=== factory-app (central) ===
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+factory-ns@if10  UP             10.60.0.10/24 fe80::2c0e:27ff:fe69:e93/64 
+10.45.0.0/16 via 10.60.0.1 dev factory-ns 
+10.46.0.0/16 via 10.60.0.1 dev factory-ns 
+10.60.0.0/24 dev factory-ns proto kernel scope link src 10.60.0.10 
+
+=== edge-app (edge) ===
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+edge-ns@if13     UP             10.70.0.10/24 fe80::700c:32ff:fefe:b937/64 
+10.46.0.0/16 via 10.70.0.1 dev edge-ns 
+10.70.0.0/24 dev edge-ns proto kernel scope link src 10.70.0.10 

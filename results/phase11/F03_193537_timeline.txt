@@ -1,0 +1,8 @@
+Experiment: F03_193537
+Fault type: netem loss 1% on ogstun2 (edge UPF egress)
+Target: 10.70.0.10 (edge-app)
+Control: 10.60.0.10 (central factory-app, unaffected path)
+Fault injected:   2026-10-13T19:35:43+03:30
+Recovery started: 2026-10-13T19:35:55+03:30
+Edge probe CSV:    /home/mohammad/projects/private-5g/results/phase11/F03_193537_edge_probe.csv
+Central probe CSV: /home/mohammad/projects/private-5g/results/phase11/F03_193537_central_probe.csv
