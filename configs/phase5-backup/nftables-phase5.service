@@ -1,0 +1,11 @@
+[Unit]
+Description=Phase 5 nftables rules (private 5G DNN isolation)
+Before=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/nft -f /etc/nftables-phase5.conf
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

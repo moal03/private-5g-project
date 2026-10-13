@@ -1,0 +1,12 @@
+[Unit]
+Description=Phase 5 - Add factory gateway to ogstun
+After=open5gs-upfd.service
+Requires=open5gs-upfd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/phase5-ogstun-factory-gw.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,45 @@
+=== Date ===
+2026-10-13T15:03:16+03:30
+
+=== Namespaces ===
+factory-app (id: 1)
+ue1 (id: 0)
+
+=== ogstun ===
+3: ogstun: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1400 qdisc fq_codel state UP group default qlen 500
+    link/none 
+    inet 10.45.0.1/16 brd 10.45.255.255 scope global ogstun
+       valid_lft forever preferred_lft forever
+    inet 10.46.0.1/16 scope global ogstun
+       valid_lft forever preferred_lft forever
+    inet6 2001:db8:cafe::1/48 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::d9f2:6589:b4db:f037/64 scope link stable-privacy proto kernel_ll 
+       valid_lft forever preferred_lft forever
+
+=== Routes (10.45, 10.46, 10.60) ===
+10.45.0.0/16 dev ogstun proto kernel scope link src 10.45.0.1 
+10.45.0.0/16 dev ogstun proto static scope link 
+10.46.0.0/16 dev ogstun proto kernel scope link src 10.46.0.1 
+10.60.0.0/24 dev factory-host proto kernel scope link src 10.60.0.1 
+local 10.45.0.1 dev ogstun table local proto kernel scope host src 10.45.0.1 
+broadcast 10.45.255.255 dev ogstun table local proto kernel scope link src 10.45.0.1 
+local 10.46.0.1 dev ogstun table local proto kernel scope host src 10.46.0.1 
+broadcast 10.46.255.255 dev ogstun table local proto kernel scope link src 10.46.0.1 
+local 10.60.0.1 dev factory-host table local proto kernel scope host src 10.60.0.1 
+broadcast 10.60.0.255 dev factory-host table local proto kernel scope link src 10.60.0.1 
+
+=== nftables ===
+table ip nat {
+	chain POSTROUTING {
+		type nat hook postrouting priority srcnat; policy accept;
+		ip saddr 10.200.1.0/24 oifname "any" counter packets 0 bytes 0 masquerade
+	}
+}
+table inet filter {
+	chain forward {
+		type filter hook forward priority filter; policy accept;
+		ip saddr 10.45.0.0/16 ip daddr 10.60.0.0/24 counter packets 6 bytes 504 drop
+		ip saddr 10.60.0.0/24 ip daddr 10.45.0.0/16 counter packets 0 bytes 0 drop
+	}
+}

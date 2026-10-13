@@ -1,0 +1,64 @@
+============================================
+Phase 6 Baseline — Software Versions
+Date: 2026-10-13T15:04:10+03:30
+============================================
+
+=== Host ===
+Linux IdeaPad-5 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026 x86_64 GNU/Linux
+Distributor ID:	Ubuntu
+Description:	Ubuntu 26.04.1 LTS
+Release:	26.04
+Codename:	resolute
+
+=== CPU / RAM ===
+8
+               total        used        free      shared  buff/cache   available
+Mem:            14Gi       3.9Gi       5.7Gi       672Mi       6.3Gi        11Gi
+Swap:          4.0Gi       1.1Mi       4.0Gi
+
+=== Open5GS packages ===
+open5gs:amd64 2.8.0~resolute6
+open5gs-amf:amd64 2.8.0~resolute6
+open5gs-ausf:amd64 2.8.0~resolute6
+open5gs-bsf:amd64 2.8.0~resolute6
+open5gs-common:amd64 2.8.0~resolute6
+open5gs-hss:amd64 2.8.0~resolute6
+open5gs-mme:amd64 2.8.0~resolute6
+open5gs-nrf:amd64 2.8.0~resolute6
+open5gs-nssf:amd64 2.8.0~resolute6
+open5gs-pcf:amd64 2.8.0~resolute6
+open5gs-pcrf:amd64 2.8.0~resolute6
+open5gs-scp:amd64 2.8.0~resolute6
+open5gs-sepp:amd64 2.8.0~resolute6
+open5gs-sgwc:amd64 2.8.0~resolute6
+open5gs-sgwu:amd64 2.8.0~resolute6
+open5gs-smf:amd64 2.8.0~resolute6
+open5gs-udm:amd64 2.8.0~resolute6
+open5gs-udr:amd64 2.8.0~resolute6
+open5gs-upf:amd64 2.8.0~resolute6
+
+=== Open5GS service PIDs ===
+amfd     5028
+smfd     207433
+upfd     207426
+udrd     2258
+udmd     5035
+ausfd    5029
+nrfd     1453
+pcfd     2256
+nssfd    5031
+
+=== OCUDU ===
+Path: /home/mohammad/projects/ocudu-dev
+cmake_minimum_required(VERSION 3.14)
+CU binary: 44706552 bytes, built Oct 12 22:24
+DU binary: 38658712 bytes, built Oct 12 22:25
+
+=== OAI UE (Duranta) ===
+Path: /home/mohammad/projects/duranta-oai
+Branch: develop
+Commit: 6f89078b409e671fa566782f67aae9de52fd55d8 2026-10-09 18:01:00 +0200 Merge remote-tracking branch 'origin/integration_2026_w41' into develop
+UE binary: 49041712 bytes, built Oct 13 13:14
+ZMQ plugin: 677472 bytes, built Oct 13 13:13
+
+=== User: mohammad ===
