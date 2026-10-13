@@ -1,0 +1,15 @@
+=== TCP iperf3 test at 2DL/2UL TDD ===
+Date: Tue Oct 13 02:09:19 PM +0330 2026
+
+--- TCP 20s ---
+Sender:   8.70 Mbps
+Receiver: 7.83 Mbps
+Retransmissions: 0
+
+--- UDP 20 Mbps offered, 15s ---
+Sender:   20.0 Mbps, 0% loss
+Receiver: 8.83 Mbps, 0/27820 (0%) loss, jitter 1.58 ms
+
+--- Comparison to 3DL/1UL TDD ---
+TCP sender was 4.61 Mbps (before), 8.70 Mbps (after) — +89%
+UDP test killed UE at 3DL/1UL; survives at 2DL/2UL
