@@ -256,8 +256,7 @@ level. They are not setup errors.
 
 ## 12. Author
 
-Mohammad Almas
-Undergraduate final project
+Mohammad Almasi
 GitHub: https://github.com/moal03
 
 ---
