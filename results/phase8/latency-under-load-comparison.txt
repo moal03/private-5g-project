@@ -1,0 +1,62 @@
+Phase 8 — Latency Under Load Comparison
+========================================
+
+All tests: UE (10.45.0.2) → probe/load destinations, 300-packet ping,
+200 ms interval, ~60 s duration, 8 Mbps UDP load when applicable.
+
+| Condition                | Probe dst | Load dst | Ping avg | Ping mdev | Loss |
+|--------------------------|-----------|----------|----------|-----------|------|
+| Control (idle)           | central   | none     | 77.4 ms  | 21.1 ms   | 0%   |
+| Same-UPF under load      | central   | central  | 65.4 ms  | 13.1 ms   | 0%   |
+| Cross-UPF (edge probe)   | edge      | central  | 29.7 ms  | 10.8 ms   | 0%   |
+| Cross-UPF (central probe)| central   | edge     | 31.7 ms  | 11.6 ms   | 0%   |
+
+Decomposition of Effects
+------------------------
+Effect 1 — Scheduler warm-up (idle → same-UPF load):
+  77.4 → 65.4 ms = -12.0 ms (-15.5%)
+
+Effect 2 — UPF isolation (same-UPF load → cross-UPF load):
+  65.4 → 29.7 ms = -35.7 ms (-54.6%)
+
+Combined effect (idle → cross-UPF load):
+  77.4 → 30.7 ms (avg of 29.7 and 31.7) = -46.7 ms (-60.3%)
+
+Symmetric check:
+  Edge probe (central loaded): 29.7 ms
+  Central probe (edge loaded): 31.7 ms
+  Difference: 2.0 ms (below the 10.8 ms jitter floor)
+
+Interpretation
+--------------
+1. The DU scheduler produces more regular grants when the UE has
+   active traffic. Without load, the scheduler occasionally misses
+   the ping grant, producing sporadic 100+ ms spikes that raise the
+   average. This is a property of the OCUDU implementation, not of
+   the 5G standard.
+
+2. When load and probe share the same UPF, they queue against each
+   other, adding ~35 ms to the probe.
+
+3. When load and probe are on different UPFs (which are also on
+   different DNNs, different TUN interfaces, and different session
+   paths), the queueing disappears and the probe returns to the
+   warm-scheduler latency of ~30 ms.
+
+Practical conclusion
+--------------------
+In this software testbed, isolating a latency-sensitive flow onto
+a separate UPF (with its own DNN and TUN interface) provides a
+measurable ~35 ms latency benefit under load. This is a genuine
+data-plane isolation result, distinct from the Phase 7 finding
+(which was about simulated backhaul distance).
+
+Limitations
+-----------
+- Single UE; both flows share the same uplink (that is why the
+  scheduler warm-up effect exists at all).
+- Software-emulated RAN, not physical RF.
+- The specific scheduler behavior is tied to this OCUDU build.
+- 8 Mbps UDP is below the UE's ~8.6 Mbps saturation ceiling.
+- The conclusion is about average latency under moderate load;
+  tail percentiles were not analyzed in this comparison.

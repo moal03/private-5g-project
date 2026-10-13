@@ -1,0 +1,14 @@
+=== CU ===
+root      225606 11.1 16.1 2771332 2524104 ?     Ssl  16:54   5:26 ./build/apps/cu/ocu -c /home/mohammad/projects/private-5g/configs/ocudu/cu_zmq.yml
+=== DU ===
+root      225693  135 16.2 4018060 2546808 ?     Ssl  16:54  65:30 ./build/apps/du/odu -c /home/mohammad/projects/private-5g/configs/ocudu/du_zmq.yml
+=== UE ===
+root      225776 20.2  2.3 2499496 364756 ?      SLsl 16:55   9:40 ./nr-uesoftmodem -O /home/mohammad/projects/private-5g/configs/ocudu/oaiue_zmq.baseline.conf
+root      225779  0.0  0.0  27728  3988 ?        S    16:55   0:00 ./nr-uesoftmodem -O /home/mohammad/projects/private-5g/configs/ocudu/oaiue_zmq.baseline.conf
+=== iperf3 servers ===
+root      227029  0.0  0.0  15584  6796 pts/9    S+   17:04   0:00 sudo ip netns exec factory-app iperf3 -s -B 10.60.0.10
+root      227039  0.0  0.0  15584  2260 pts/10   Ss   17:04   0:00 sudo ip netns exec factory-app iperf3 -s -B 10.60.0.10
+root      227040  0.0  0.0  19724  5220 pts/10   S+   17:04   0:01 iperf3 -s -B 10.60.0.10
+root      227073  0.0  0.0  15580  6832 pts/11   S+   17:05   0:00 sudo ip netns exec edge-app iperf3 -s -B 10.70.0.10
+root      227081  0.0  0.0  15580  2188 pts/12   Ss   17:05   0:00 sudo ip netns exec edge-app iperf3 -s -B 10.70.0.10
+root      227082  0.0  0.0  19724  5184 pts/12   S+   17:05   0:01 iperf3 -s -B 10.70.0.10

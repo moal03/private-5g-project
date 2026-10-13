@@ -1,0 +1,17 @@
+=== Namespaces ===
+edge-app (id: 2)
+factory-app (id: 1)
+ue1 (id: 0)
+=== UE routes ===
+10.45.0.0/24 dev oaitun_ue1 proto kernel scope link src 10.45.0.2 
+10.46.0.0/24 dev oaitun_ue1p2 proto kernel scope link src 10.46.0.2 
+10.60.0.0/24 dev oaitun_ue1 scope link 
+10.70.0.0/24 dev oaitun_ue1p2 scope link 
+10.200.1.0/24 dev v-ue1 proto kernel scope link src 10.200.1.2 
+=== factory-app routes ===
+10.45.0.0/16 via 10.60.0.1 dev factory-ns 
+10.46.0.0/16 via 10.60.0.1 dev factory-ns 
+10.60.0.0/24 dev factory-ns proto kernel scope link src 10.60.0.10 
+=== edge-app routes ===
+10.46.0.0/16 via 10.70.0.1 dev edge-ns 
+10.70.0.0/24 dev edge-ns proto kernel scope link src 10.70.0.10 

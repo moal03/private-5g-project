@@ -1,0 +1,48 @@
+Phase 8 — UDP Saturation Finding
+================================
+
+Test: UE (10.45.0.2) → Central app (10.60.0.10) via UPF-A
+Transport: UDP, 1200-byte payload
+Duration: 15-30 s per run
+
+Offered (Mbps) | Delivered (Mbps) | Drain time (s) | Loss
+--------------------------------------------------------------
+1.0            | 1.00             | —              | 0%
+5.0            | 5.00             | —              | 0%
+10.0           | 10.00            | —              | 0%
+11.0           | 8.55             | 19.30          | 0%
+12.0           | control failed   | —              | —
+13.0           | 8.60             | 22.68          | 0%
+14.0           | control failed   | —              | —
+15.0           | control failed   | —              | —
+20.0           | control failed   | —              | —
+25.0           | control failed   | —              | —
+30.0           | control failed   | —              | —
+
+Finding
+-------
+1. Delivered UDP throughput plateaus at ~8.6 Mbps.
+   This is the UE uplink ceiling (matches Phase 4's 8.7 Mbps TCP).
+2. Offered loads above 10 Mbps cause the iperf3 TCP control
+   channel to be starved by the UDP data flood. Outcome is
+   non-deterministic (11 worked, 12 failed, 13 worked, 14 failed).
+3. Delivered traffic equal to the ceiling while queue drain
+   adds up to ~7 seconds to a 15-second test.
+4. Loss is 0% in every successful run — the network itself
+   drops no packets. The control channel failure is a tooling
+   artifact of iperf3, not a network failure.
+
+Interpretation
+--------------
+The bottleneck is the UE uplink. Neither the UPF nor the
+Open5GS core nor the DU scheduler limits UDP throughput below
+that ceiling. Offsetting the UE uplink (e.g., adding more UEs,
+using different numerologies) would raise this ceiling, but
+those are outside the scope of Phase 8.
+
+Recommendation
+--------------
+Run subsequent load experiments at 8 Mbps UDP (below the ceiling)
+and measure the latency impact on a separate probe flow (ping).
+This isolates the question: "How does close-to-saturation load
+affect a latency-sensitive probe?"

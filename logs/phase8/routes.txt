@@ -1,0 +1,45 @@
+default via 192.168.1.1 dev wlp0s20f3 proto dhcp src 192.168.1.102 metric 600 
+10.45.0.0/16 dev ogstun proto static scope link 
+10.45.0.0/16 dev ogstun proto kernel scope link src 10.45.0.1 
+10.46.0.0/16 dev ogstun2 proto kernel scope link src 10.46.0.1 
+10.60.0.0/24 dev factory-host proto kernel scope link src 10.60.0.1 
+10.70.0.0/24 dev edge-host proto kernel scope link src 10.70.0.1 
+10.200.1.0/24 dev v-eth1 proto kernel scope link src 10.200.1.1 
+192.168.1.0/24 dev wlp0s20f3 proto kernel scope link src 192.168.1.102 metric 600 
+local 10.45.0.1 dev ogstun table local proto kernel scope host src 10.45.0.1 
+broadcast 10.45.255.255 dev ogstun table local proto kernel scope link src 10.45.0.1 
+local 10.46.0.1 dev ogstun2 table local proto kernel scope host src 10.46.0.1 
+broadcast 10.46.255.255 dev ogstun2 table local proto kernel scope link src 10.46.0.1 
+local 10.60.0.1 dev factory-host table local proto kernel scope host src 10.60.0.1 
+broadcast 10.60.0.255 dev factory-host table local proto kernel scope link src 10.60.0.1 
+local 10.70.0.1 dev edge-host table local proto kernel scope host src 10.70.0.1 
+broadcast 10.70.0.255 dev edge-host table local proto kernel scope link src 10.70.0.1 
+local 10.200.1.1 dev v-eth1 table local proto kernel scope host src 10.200.1.1 
+broadcast 10.200.1.255 dev v-eth1 table local proto kernel scope link src 10.200.1.1 
+local 127.0.0.0/8 dev lo table local proto kernel scope host src 127.0.0.1 
+local 127.0.0.1 dev lo table local proto kernel scope host src 127.0.0.1 
+broadcast 127.255.255.255 dev lo table local proto kernel scope link src 127.0.0.1 
+local 192.168.1.102 dev wlp0s20f3 table local proto kernel scope host src 192.168.1.102 
+broadcast 192.168.1.255 dev wlp0s20f3 table local proto kernel scope link src 192.168.1.102 
+2001:db8:cafe::/48 dev ogstun proto kernel metric 256 pref medium
+2001:db8:cafe::/48 dev ogstun proto static metric 1024 pref medium
+fe80::/64 dev ogstun proto kernel metric 256 pref medium
+fe80::/64 dev v-eth1 proto kernel metric 256 pref medium
+fe80::/64 dev factory-host proto kernel metric 256 pref medium
+fe80::/64 dev ogstun2 proto kernel metric 256 pref medium
+fe80::/64 dev edge-host proto kernel metric 256 pref medium
+fe80::/64 dev wlp0s20f3 proto kernel metric 1024 pref medium
+local ::1 dev lo table local proto kernel metric 0 pref medium
+local 2001:db8:cafe::1 dev ogstun table local proto kernel metric 0 pref medium
+local fe80::244a:62ff:fe39:9152 dev edge-host table local proto kernel metric 0 pref medium
+local fe80::683c:5aff:fe1e:fc52 dev v-eth1 table local proto kernel metric 0 pref medium
+local fe80::75d5:fc76:b10a:bc3a dev wlp0s20f3 table local proto kernel metric 0 pref medium
+local fe80::d9f2:6589:b4db:f037 dev ogstun table local proto kernel metric 0 pref medium
+local fe80::ded3:5d7c:e3f6:17fb dev ogstun2 table local proto kernel metric 0 pref medium
+local fe80::e8f1:81ff:fef0:f574 dev factory-host table local proto kernel metric 0 pref medium
+multicast ff00::/8 dev wlp0s20f3 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev ogstun table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev v-eth1 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev factory-host table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev ogstun2 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev edge-host table local proto kernel metric 256 pref medium

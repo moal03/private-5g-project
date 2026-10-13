@@ -1,0 +1,78 @@
+===================================================
+FILE: ping-idle-central.txt
+===================================================
+File:   results/phase8/ping-idle-central.txt
+Samples: 300
+Min:     25.500 ms
+Median:  74.700 ms
+Mean:    75.536 ms
+Stdev:   21.623 ms
+P95:     109.000 ms
+P99:     127.000 ms
+Max:     151.000 ms
+
+===================================================
+FILE: ping-idle-edge.txt
+===================================================
+File:   results/phase8/ping-idle-edge.txt
+Samples: 300
+Min:     28.700 ms
+Median:  76.800 ms
+Mean:    77.800 ms
+Stdev:   21.094 ms
+P95:     115.000 ms
+P99:     127.000 ms
+Max:     143.000 ms
+
+===================================================
+FILE: ping-control-60s.txt
+===================================================
+File:   results/phase8/ping-control-60s.txt
+Samples: 300
+Min:     17.600 ms
+Median:  78.150 ms
+Mean:    77.381 ms
+Stdev:   21.125 ms
+P95:     109.000 ms
+P99:     123.000 ms
+Max:     130.000 ms
+
+===================================================
+FILE: ping-under-load-same-dest.txt
+===================================================
+File:   results/phase8/ping-under-load-same-dest.txt
+Samples: 300
+Min:     52.000 ms
+Median:  63.600 ms
+Mean:    65.378 ms
+Stdev:   13.116 ms
+P95:     75.700 ms
+P99:     134.000 ms
+Max:     175.000 ms
+
+===================================================
+FILE: ping-under-load-cross-upf.txt
+===================================================
+File:   results/phase8/ping-under-load-cross-upf.txt
+Samples: 300
+Min:     21.600 ms
+Median:  27.100 ms
+Mean:    29.735 ms
+Stdev:   10.766 ms
+P95:     41.500 ms
+P99:     78.300 ms
+Max:     104.000 ms
+
+===================================================
+FILE: ping-under-load-cross-upf-reverse.txt
+===================================================
+File:   results/phase8/ping-under-load-cross-upf-reverse.txt
+Samples: 300
+Min:     21.600 ms
+Median:  29.500 ms
+Mean:    31.673 ms
+Stdev:   11.587 ms
+P95:     40.300 ms
+P99:     88.800 ms
+Max:     120.000 ms
+

@@ -1,0 +1,19 @@
+  ferretdb.service                                      loaded    active   running FerretDB (MongoDB-compatible for Open5GS)
+  open5gs-amfd.service                                  loaded    active   running Open5GS AMF Daemon
+  open5gs-ausfd.service                                 loaded    active   running Open5GS AUSF Daemon
+  open5gs-bsfd.service                                  loaded    active   running Open5GS BSF Daemon
+  open5gs-hssd.service                                  loaded    active   running Open5GS HSS Daemon
+  open5gs-mmed.service                                  loaded    active   running Open5GS MME Daemon
+  open5gs-nrfd.service                                  loaded    active   running Open5GS NRF Daemon
+  open5gs-nssfd.service                                 loaded    active   running Open5GS NSSF Daemon
+  open5gs-pcfd.service                                  loaded    active   running Open5GS PCF Daemon
+  open5gs-pcrfd.service                                 loaded    active   running Open5GS PCRF Daemon
+  open5gs-scpd.service                                  loaded    active   running Open5GS SCP Daemon
+  open5gs-seppd.service                                 loaded    active   running Open5GS SEPP Daemon
+  open5gs-sgwcd.service                                 loaded    active   running Open5GS SGW-C Daemon
+  open5gs-sgwud.service                                 loaded    active   running Open5GS SGW-U Daemon
+  open5gs-smfd.service                                  loaded    active   running Open5GS SMF Daemon
+  open5gs-udmd.service                                  loaded    active   running Open5GS UDM Daemon
+  open5gs-udrd.service                                  loaded    active   running Open5GS UDR Daemon
+  open5gs-upfd-edge.service                             loaded    active   running Open5GS UPF Edge Daemon (edge-side UPF for factory DNN)
+  open5gs-upfd.service                                  loaded    active   running Open5GS UPF Daemon

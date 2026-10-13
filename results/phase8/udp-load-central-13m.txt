@@ -1,0 +1,12 @@
+Connecting to host 10.60.0.10, port 5201
+[  5] local 10.45.0.2 port 56015 connected to 10.60.0.10 port 5201
+[ ID] Interval           Transfer     Bitrate         Total Datagrams
+[  5]   0.00-5.00   sec  7.76 MBytes  13.0 Mbits/sec  6778  
+[  5]   5.00-10.00  sec  7.75 MBytes  13.0 Mbits/sec  6771  
+[  5]  10.00-15.00  sec  7.75 MBytes  13.0 Mbits/sec  6770  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
+[  5]   0.00-15.00  sec  23.3 MBytes  13.0 Mbits/sec  0.000 ms  0/20319 (0%)  sender
+[  5]   0.00-22.68  sec  23.3 MBytes  8.60 Mbits/sec  1.602 ms  0/20319 (0%)  receiver
+
+iperf Done.
