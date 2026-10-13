@@ -676,7 +676,7 @@ def executive_summary():
     The project delivers a reproducible testbed, an automated
     experiment harness, eleven phase reports, and a cross-phase
     analysis with statistical tests. It is a complete and honest
-    undergraduate research result.
+    research result.
     """).strip()
 
 
