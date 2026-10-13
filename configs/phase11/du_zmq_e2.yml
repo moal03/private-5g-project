@@ -1,0 +1,139 @@
+# OCUDU DU configuration — exact match to OCUDU tutorial
+# Band n78 TDD, 20 MHz, 30 kHz SCS, ZeroMQ ports 4556/4557
+
+gnb_id: 411
+gnb_id_bit_length: 22
+gnb_du_id: 0
+
+log:
+  filename: /home/mohammad/projects/private-5g/logs/phase11/ocudu/du.log
+  all_level: info
+
+f1ap:
+  addrs:
+    - 127.0.0.1
+  bind_addrs:
+    - 127.0.0.1
+  retry_connection: true
+
+f1u:
+  bind_port: 2152
+  peer_port: 2152
+  socket:
+    - bind_addr: 127.0.0.3
+      ext_addr: 127.0.0.3
+    - bind_addr: 127.0.0.13
+      ext_addr: 127.0.0.13
+      sst: 1
+      sd: 1
+      five_qi: 9
+    - bind_addr: 127.0.0.23
+      ext_addr: 127.0.0.23
+      sst: 1
+      sd: 2
+      five_qi: 9
+
+cell_cfg:
+  dl_arfcn: 632628
+  band: 78
+  channel_bandwidth_MHz: 20
+  common_scs: 30
+  plmn: "99970"
+  tac: 1
+  pci: 1
+  csi:
+    csi_rs_enabled: true
+  pucch:
+    nof_cell_csi_res: 1
+  tdd_ul_dl_cfg:
+    dl_ul_tx_period: 5
+    nof_dl_slots: 2
+    nof_dl_symbols: 6
+    nof_ul_slots: 2
+    nof_ul_symbols: 4
+
+ru_sdr:
+  device_driver: zmq
+  device_args: tx_port=tcp://10.200.1.1:4556,rx_port=tcp://10.200.1.2:4557,base_srate=23.04e6
+  srate: 23.04
+  tx_gain: -12
+  rx_gain: 0
+
+qos:
+  -
+    # 5QI = 9 e.g Video (Buffered Streaming) — PDB 300ms, PER 10^-6
+    five_qi: 9
+    pdcp:
+      tx:
+        sn: 18
+        discard_timer: 1500
+        status_report_required: false
+      rx:
+        sn: 18
+        t_reordering: 220
+        out_of_order_delivery: false
+    f1u_cu_up:
+      backoff_timer: 5
+    f1u_du:
+      backoff_timer: 5
+    rlc:
+      mode: am
+      am:
+        tx:
+          sn: 18
+          t-poll-retransmit: 100
+          max-retx-threshold: 32
+          poll-pdu: 16
+          poll-byte: -1
+          queue-size: 16384
+          queue-bytes: 6172672
+        rx:
+          sn: 18
+          t-reassembly: 20
+          t-status-prohibit: 10
+  -
+    # 5QI = 82 e.g Discrete Automation — PDB 10ms, PER 10^-4
+    five_qi: 82
+    pdcp:
+      tx:
+        sn: 12
+        discard_timer: 10
+        status_report_required: false
+      rx:
+        sn: 12
+        t_reordering: 1
+        out_of_order_delivery: false
+    f1u_cu_up:
+      backoff_timer: 5
+    f1u_du:
+      backoff_timer: 5
+    rlc:
+      mode: um-bidir
+      um-bidir:
+        tx:
+          sn: 6
+          queue-size: 16384
+          queue-bytes: 6172672
+        rx:
+          sn: 6
+          t-reassembly: 10
+
+pcap:
+  f1ap_enable: false
+  f1u_enable: false
+  mac_enable: false
+  rlc_enable: false
+
+# E2 agent for Near-RT RIC (FlexRIC)
+e2:
+  enable_du_e2: true
+  addrs:
+    - 127.0.0.1
+  port: 36421
+  bind_addrs:
+    - 127.0.0.1
+  e2sm_kpm_enabled: true
+  e2sm_rc_enabled: true
+  e2sm_ccc_enabled: false
+  sctp_hb_interval: 30000
+  sctp_assoc_max_retx: 10

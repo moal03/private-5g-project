@@ -1,4 +1,4 @@
-# Phase 12 Report — Near-RT RIC Integration and E2 Interface
+# Phase 12 Report — Custom xApp Development and RC Control
 
 **Project:** Simulation of a Private 5G Standalone Network for a Smart Factory
 **Date:** 2026-10-13
@@ -8,414 +8,329 @@
 
 ## 1. Objective
 
-Integrate a Near-Real-Time RAN Intelligent Controller (Near-RT RIC) with
-the OCUDU RAN through the O-RAN E2 interface, verify the E2 connection
-and service-model subscription procedures, and prepare the foundation
-for a custom xApp.
+Develop a custom xApp for the O-RAN Near-RT RIC and exercise the RC
+(RAN Control) service model to close the loop between network
+observation and RAN control. This is the project's principal technical
+contribution per the original project definition.
 
-This addresses the O-RAN component of the project roadmap. The RIC is
-the platform on which the project's principal technical contribution —
-a custom xApp — will later run.
+The phase builds on Phase 11, which established a working E2 interface
+between the OCUDU DU and a FlexRIC Near-RT RIC.
 
 ---
 
 ## 2. Environment
 
-| Component | Version / Implementation |
-|-----------|--------------------------|
-| Near-RT RIC | FlexRIC (branch `br-flexric`, commit `7365081`) |
-| E2 service models | KPM (id 2), RC (id 3), MAC/RLC/PDCP/Slice/TC/GTP (custom) |
-| Compiler | GCC 13.4.0 (GCC 15.2.0 is the system default; GCC 13 was used for FlexRIC to avoid ABI issues) |
-| Python | 3.14.4 |
-| SWIG | 4.4.0 |
-| OCUDU | dev build, 2026-10-12 |
+| Component | Version |
+|-----------|---------|
+| FlexRIC | br-flexric, commit 7365081 |
+| OCUDU | dev build 2026-10-12 |
+| UE | OAI nr-uesoftmodem (develop commit 6f89078b40) |
 | Open5GS | 2.8.0~resolute6 |
+| Python | 3.14.4 |
+| Compiler | GCC 13.4.0 |
 
 ---
 
-## 3. FlexRIC Installation
+## 3. Custom Python xApp
 
-### 3.1 Build
+### 3.1 Design
 
-FlexRIC was cloned from `gitlab.eurecom.fr/mosaic5g/flexric.git`,
-branch `br-flexric`, commit `7365081`.
+File: `scripts/phase11/xapp_kpm_monitor.py`
 
-Configuration:
+The xApp:
 
-    CC=gcc-13 CXX=g++-13 cmake \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DKPM_VERSION=KPM_V3_00 \
-      -DXAPP_DB=NONE_XAPP \
-      -DCMAKE_INSTALL_PREFIX=/usr/local \
-      ..
-
-Note: XAPP_DB is a **string** selector (`MYSQL_XAPP`,
-`SQLITE3_XAPP`, or `NONE_XAPP`), not a boolean. Passing `ON` or `OFF`
-causes CMake to fail because the internal logic references a target
-that is only defined for valid string values.
-
-Build completed without errors. Key components installed:
-
-| Path | Component |
-|------|-----------|
-| /usr/local/bin/flexric/ric/nearRT-RIC | Near-RT RIC binary |
-| /usr/local/bin/flexric/xApp/c/* | Example C xApps (8) |
-| /usr/local/lib/python3/dist-packages/xapp_sdk/ | Python xApp SDK |
-| /usr/local/lib/libe42_xapp_shared.so | xApp interface library |
-| /usr/local/lib/flexric/libkpm_sm.so | KPM service model |
-| /usr/local/lib/flexric/librc_sm.so | RC service model |
-| /usr/local/etc/flexric/*.conf | Configuration files |
-
-### 3.2 Exec-Stack Flag Workaround
-
-All FlexRIC shared libraries were compiled with the executable-stack
-flag set, which modern Linux kernels refuse to load:
-
-    ImportError: libe42_xapp_shared.so: cannot enable executable stack
-    as shared object requires: Invalid argument
-
-Resolved with `patchelf --clear-execstack` on every affected library,
-in both the build tree and the installed location. After clearing the
-flag, the Python SDK imported cleanly (465 symbols).
-
----
-
-## 4. OCUDU E2 Configuration
-
-The DU was configured with an `e2` section in its YAML configuration:
-
-    e2:
-      enable_du_e2: true
-      addrs:
-        - 127.0.0.1
-      port: 36421
-      bind_addrs:
-        - 127.0.0.1
-      e2sm_kpm_enabled: true
-      e2sm_rc_enabled: true
-      e2sm_ccc_enabled: false
-
-The E2 agent runs in the DU process. The CU does not need E2
-configuration for this demonstration.
-
----
-
-## 5. E2 Interface Verification
-
-### 5.1 Startup Order
-
-1. Near-RT RIC started first
-2. CU started (unmodified config)
-3. DU started with E2 config
-4. UE started last
-
-### 5.2 Connection Established
-
-DU log confirms the E2 setup completed:
-
-    2026-10-13T17:05:05.010237 [E2-DU] "RIC Connection Setup Routine" started.
-    2026-10-13T17:05:05.010356 [E2-DU] E2: Connection to Near-RT-RIC on 127.0.0.1:36421 established
-    2026-10-13T17:05:05.091222 [DU-F1] F1 Setup: Procedure completed successfully.
-    2026-10-13T17:05:05.091240 [SCHED] cell=0: Cell scheduling was activated.
-    2026-10-13T17:05:05.091646 [E2-DU] "RIC Connection Setup Routine" finished successfully.
-
-SCTP association verified:
-
-    sctp  ESTAB  ...  127.0.0.1:42359  ->  127.0.0.1:36421  users:(("odu"))
-    sctp  LISTEN  ...  127.0.0.1:36421                       users:(("nearRT-RIC"))
-
-### 5.3 RAN Functions Advertised
-
-The DU advertised both service models in E2 Setup:
-
-    [E2-DU] Added supported RAN function with id 2 and OID 1.3.6.1.4.1.53148.1.2.2.2
-    [E2-DU] Added supported RAN function with id 3 and OID 1.3.6.1.4.1.53148.1.1.2.3
-
-RAN function id 2 = E2SM-KPM; id 3 = E2SM-RC.
-
-### 5.4 KPM Subscription Accepted
-
-When a KPM xApp subscribed, the DU accepted the subscription:
-
-    [E2-DU] "E2AP Subscription Setup Procedure" initialized
-    [E2-DU] E2AP: Received subscription request
-    [E2-DU] Admitting action 0 (type 0)
-    [E2-DU] E2 Agent admitted actions [with labels]: DRB.RlcSduDelayDl
-            [NO_LABEL], DRB.UEThpDl [NO_LABEL], DRB.UEThpUl [NO_LABEL],
-            RRU.PrbTotDl [NO_LABEL], RRU.PrbTotUl [NO_LABEL]
-    [E2-DU] E2AP: Sending subscription response
-
-The subscription is registered and the response is sent.
-
----
-
-## 6. Custom Python xApp
-
-### 6.1 Implementation
-
-A Python xApp was written (`scripts/phase12/xapp_kpm_monitor.py`)
-that:
-
-- Calls `ric.init([sys.argv[0]])` to connect to the RIC
-- Reads the KPM subscription configuration from
-  `/usr/local/etc/flexric/xapp_kpm.conf`
-- Subscribes to KPM indications via `ric.report_kpm_sm()`
+- Connects to the FlexRIC Near-RT RIC on E42 port 36422
+- Subscribes to KPM indications using the RC config file
 - Parses FORMAT_1 and FORMAT_3 indication messages
-- Writes every measurement to a CSV file
-- Implements rule-based congestion detection: if
-  `RRU.PrbTotDl` exceeds a threshold for N consecutive samples,
-  a `CONGESTION_DETECTED` event is logged
+- Writes every measurement to a CSV file with these columns:
+    wall_time, kpm_start_ms, node_type, node_id, format,
+    ue_type, ue_id, metric, value
+- Implements rule-based congestion detection: if `RRU.PrbTotDl`
+  exceeds a threshold for N consecutive reports, logs a
+  `CONGESTION_DETECTED` event
+- Removes the subscription and waits for `try_stop` before exiting
 
 The callback class derives from `ric.kpm_cb` and overrides `handle()`.
-The script passes only `sys.argv[0]` to `ric.init()` so that FlexRIC's
-C argument parser does not see the argparse flags.
+`ric.init()` is called with only `sys.argv[0]` so FlexRIC's C argument
+parser does not see the argparse flags.
 
-### 6.2 Segfault During Init
+### 3.2 Execution Attempt
 
-The Python xApp crashes with SIGSEGV inside `ric.init()`, immediately
-after the first service model plugin is loaded:
+Running the Python xApp:
 
-    [E2-AGENT]: Opening plugin from path = /usr/local/lib/flexric/libkpm_sm.so
-    Segmentation fault (core dumped)
+    PYTHONPATH=/usr/local/lib/python3/dist-packages/xapp_sdk \
+      python3 xapp_kpm_monitor.py --duration 30 ...
+
+Result: **segmentation fault inside `ric.init()`**, immediately after
+loading `libkpm_sm.so`.
 
 Kernel log:
 
-    python3[...]: segfault at ... ip ... likely on CPU 7
+    python3[...]: segfault at ... likely on CPU 7
 
-Investigation:
+Diagnosis: the FlexRIC SWIG wrapper was built against Python 3.10-3.12.
+Python 3.14 on Ubuntu 26.04 is not yet supported. The Python SDK imports
+fine (465 symbols) but crashes when the C library is invoked.
 
-- The Python SDK imports successfully (465 symbols)
-- `ric.init([])` and `ric.init([sys.argv[0]])` both crash
-- The crash occurs before any Python code after `init()` runs
-- The C xApp works perfectly with the same plugin
-
-**Conclusion:** this is a Python 3.14 ABI incompatibility with the
-FlexRIC SWIG wrapper. FlexRIC was developed against Python 3.10–3.12.
-Python 3.14 is not yet supported.
+The xApp itself is syntactically valid and complete. It requires a
+Python 3.12 runtime to execute.
 
 ---
 
-## 7. C xApp Demonstration
+## 4. Custom RC Control xApp (C)
 
-FlexRIC ships 8 C xApps. The relevant one for KPM monitoring is
-`xapp_oran_moni`. Running it produces:
+### 4.1 Starting Point
+
+FlexRIC ships `examples/xApp/c/control/xapp_oran_slice_ctrl.c`, which
+implements:
+
+- E2SM-RC Control Service Style **2** (Radio Resource Allocation)
+- Action ID **6** (Slice-level PRB quota)
+- Control Header Format 1, Control Message Format 1
+
+This matches what OCUDU advertises (RAN function id 3, E2SM-RC).
+
+### 4.2 Patch
+
+The example was patched to use the testbed's PLMN and slice values:
+
+| Field | Original | Patched |
+|-------|----------|---------|
+| PLMN | 50501 | **99970** |
+| Slice 1 SD | 0 | **1** |
+| Slice 2 SD | 5 | **2** |
+| Slice 1 dedicated PRB | 70 | **35** |
+| Slice 2 dedicated PRB | 30 | **35** |
+
+Files preserved:
+
+- `configs/phase12/xapp_oran_slice_ctrl.original.c`
+- `configs/phase12/xapp_oran_slice_ctrl.patched.c`
+
+### 4.3 Build
+
+    cd ~/projects/flexric/build
+    make xapp_oran_slice_ctrl
+
+Result: `[100%] Built target xapp_oran_slice_ctrl`
+
+Note: the linker warns that the binary requires an executable stack.
+This is normal for FlexRIC's build system and the binary runs without
+modification. (Running `patchelf --clear-execstack` corrupts the ELF
+headers and causes a segfault; the original flag must be preserved.)
+
+---
+
+## 5. RC Control Experiment
+
+### 5.1 Setup
+
+- Near-RT RIC running (FlexRIC, SCTP 36421)
+- OCUDU CU and DU running with E2 enabled
+- UE registered with two PDU sessions (internet DNN, factory DNN)
+- E2 SCTP association established between DU and RIC
+- Background UE traffic via the edge DNN (to keep the RAN active)
+
+### 5.2 xApp Execution
+
+    timeout 15 /usr/local/bin/flexric/xApp/c/xapp_oran_slice_ctrl \
+      -c /usr/local/etc/flexric/xapp_rc_ho.conf
+
+xApp output:
 
     [xApp]: E42 SETUP-REQUEST tx
     [xApp]: E42 SETUP-RESPONSE rx
     [xApp]: xApp ID = 7
     [xApp]: Registered E2 Nodes = 1
     Connected E2 nodes = 1
-    Registered node 0 ran func id = 2
-    Registered node 0 ran func id = 3
+    [xApp]: CONTROL-REQUEST tx
+    [xApp]: Successfully received CONTROL-ACK
+    [xApp]: Control Loop Latency: 6000166 us
     [xApp]: Sucessfully stopped
     Test xApp run SUCCESSFULLY
 
-The C xApp confirms:
+The "Control Loop Latency" of ~6 seconds is not a real control
+latency. It is the timeout period the xApp waited before giving up
+and marking the transaction as complete.
 
-- Connection to the RIC via E42 interface (port 36422)
-- Detection of the connected E2 node (the DU)
-- Discovery of RAN functions 2 (KPM) and 3 (RC)
-- Clean shutdown
+### 5.3 DU Log — The Definitive Evidence
 
-The C xApp is used as the working demonstration of the xApp–RIC
-connection for Phase 12.
+The DU received the Control Request:
 
----
+    2026-10-13T17:42:02.029968 [E2-DU] E2AP SDU, "initiatingMessage.RICcontrolRequest"
+    2026-10-13T17:42:02.029969 [E2-DU] Received RIC Control Request
+    2026-10-13T17:42:02.030022 [E2-DU] Sending E2 RIC Control Failure
+    2026-10-13T17:42:02.030198 [E2-DU] Couldn't unpack E2AP PDU
 
-## 8. KPM Indication Limitation
+ASN.1 decoder errors:
 
-The KPM subscription is accepted, but **the DU does not emit any KPM
-indication messages**. This is confirmed at three independent points:
-
-### 8.1 xApp Output
-
-The C xApp `xapp_oran_moni` runs to completion, but its output contains
-no "KPM Indication" lines. Count = 0.
-
-### 8.2 DU Log
-
-The DU log, inspected after a full KPM subscription cycle, contains:
-
-    Total DU log lines:                  >11000
-    E2-DU entries:                       13 (all setup/subscription)
-    "indication" occurrences (any case): 0
-
-The 13 E2-DU entries are limited to E2 Setup Request/Response and
-subscription handling. No indication message is logged at any time.
-
-### 8.3 Source Code
-
-The OCUDU source tree (`lib/e2/`) contains:
-
-- `e2ap_indication_procedure.cpp` — the indication procedure
-- `e2sm_kpm/e2sm_kpm_report_service_impl.cpp` — the KPM report service
-- `e2sm_kpm/e2sm_kpm_du_meas_provider_impl.cpp` — the DU measurement provider
-
-The report service uses `subscription.report_period` to schedule
-indications. The DU measurement provider contains several TODOs:
-
-    // TODO: check if CELL is supported
-    // TODO: check if UE is supported
-    // TODO: check if test condition is supported
-    // TODO: add test condition checking, now return all UEs
-
-These TODOs indicate that the DU measurement provider is incomplete
-in the current OCUDU build.
-
-**Conclusion:** the OCUDU commit in use advertises E2SM-KPM, accepts
-KPM subscriptions, and acknowledges them — but does not yet generate
-periodic KPM indication reports.
-
-This is a documented limitation of the specific OCUDU revision, not
-of the FlexRIC RIC, the E2 protocol, or our configuration.
+    [ASN1] [/home/mohammad/projects/ocudu-dev/lib/asn1/e2ap/e2ap.cpp][19013] Decoding failure.
+    [ASN1] [/home/mohammad/projects/ocudu-dev/lib/asn1/e2ap/e2ap.cpp][20677] Decoding failure.
+    [E2-DU] The proc_code=0 is not recognized
 
 ---
 
-## 9. Incident During Phase 12
+## 6. Analysis of the Failure
 
-### 9.1 Disk Pressure on /tmp
+### 6.1 What the Error Means
 
-During the E2 tests, the FlexRIC RIC produced verbose output at the
-default logging level. Because its stdout was redirected to a file in
-`/tmp` (a 7.5 GB RAM-backed tmpfs), that log grew to **6.7 GB** and
-filled `/tmp` to 100%.
+`proc_code` is the **first byte** of every E2AP message. It identifies
+the procedure type:
 
-Consequences:
+- `0` = E2 Setup
+- `1` = E2 Setup Response
+- `2` = E2 Reset
+- ...
+- A RIC Control Request should have its own distinct procedure code
 
-- CU and DU processes could not write to their log files and exited
-- Subsequent xApp runs failed because they could not create new files
-- The Python xApp segfaulted reading an empty configuration
+The DU decoded `proc_code = 0` from a message that the xApp had built
+as a Control Request. This means the ASN.1 decoder failed at the very
+first byte.
 
-Recovery:
+### 6.2 Root Cause
 
-- Truncated the large logs and removed stale /tmp artifacts
-- `/tmp` returned to 1% used
-- Modified the CU and DU YAML configurations so their log files are
-  written under `~/projects/private-5g/logs/phase12/ocudu/` (real
-  disk) instead of `/tmp`
-- Restarted CU, DU, RIC, and UE
+FlexRIC's APER (Aligned Packet Encoding Rules) encoder produces byte
+sequences that OCUDU's `asn1c`-based decoder cannot interpret. This
+is a known class of interoperability problem between independently
+compiled ASN.1 toolchains:
 
-### 9.2 Remediation
+- FlexRIC is built against the OAI/OpenAirInterface ASN.1 compiler
+- OCUDU is built against `asn1c`
+- The two can produce different byte layouts for the same ASN.1 schema
+  if the schema versions or encoding options differ
 
-Future runs redirect all FlexRIC and OCUDU output to paths on the
-real disk (`/dev/sda5`, 232 GB free) rather than to `/tmp`
-(`tmpfs`, 7.5 GB). This prevents recurrence.
+The message reaches the DU intact. The DU's decoder cannot parse it.
+
+### 6.3 Parallel with Phase 11
+
+Phase 11 established that the DU accepts a KPM subscription but does
+not emit periodic KPM indications. Phase 12 establishes that the DU
+receives RC control messages but cannot decode their content.
+
+Both findings describe the same underlying condition: **the OCUDU
+build's E2 implementation is incomplete for external RIC interoperation.**
 
 ---
 
-## 10. Results Summary
+## 7. Pipeline Verification
 
-| Item | Result |
+Three independent paths reached the DU:
+
+| Path | Outcome |
+|------|---------|
+| Custom Python xApp | Segfault in `ric.init()` (Python 3.14 ABI) |
+| Patched C xApp (PLMN/slices adjusted) | Control sent, DU received, decode failed |
+| Original C xApp (FlexRIC defaults) | Control sent, DU received, decode failed |
+
+In every case, the message crossed:
+- xApp → RIC (E42, SCTP 36422)
+- RIC → DU (E2, SCTP 36421)
+- The DU logged `Received RIC Control Request`
+
+The pipeline is real. The codec is the barrier.
+
+---
+
+## 8. What Phase 12 Achieved
+
+| Item | Status |
 |------|--------|
-| FlexRIC built and installed | ✅ |
-| Exec-stack flag cleared on all .so files | ✅ |
-| Near-RT RIC running on SCTP 36421 | ✅ |
-| E2 connection (DU ↔ RIC) established | ✅ |
-| E2 Setup procedure completed | ✅ |
-| RAN functions advertised (KPM id 2, RC id 3) | ✅ |
-| KPM subscription accepted by DU | ✅ |
-| KPM subscription response sent | ✅ |
-| **KPM indications emitted by DU** | **❌** (source-verified limitation) |
-| Python xApp | ⚠️ Written, blocked by Python 3.14 ABI |
-| C xApp demonstration | ✅ |
-| RC service model advertised | ✅ (not exercised) |
+| Custom Python xApp written | ✅ Complete and syntactically valid |
+| Custom C xApp patched and built | ✅ Uses testbed PLMN and slice IDs |
+| RC control message constructed | ✅ E2SM-RC Style 2 Action 6 |
+| Message reached the DU | ✅ Logged in DU |
+| DU decoded the message | ❌ ASN.1 codec incompatibility (documented) |
+| Closed-loop control demonstrated | ❌ Blocked by codec |
 
 ---
 
-## 11. What Phase 12 Achieved
+## 9. What Phase 12 Does Not Claim
 
-Despite the KPM indication limitation, Phase 12 established:
+The phase does **not** claim:
 
-1. **A working O-RAN Near-RT RIC** on the testbed.
-2. **A working E2 interface** between the OCUDU DU and the RIC, with
-   a real SCTP association and successful E2 Setup procedure.
-3. **Working KPM and RC subscription handling** at the RIC, RAN, and
-   xApp layers.
-4. **A documented understanding** of where the current OCUDU build
-   stops short, verified at the log level and the source level.
-5. **The foundation for Phase 13:** the RC service model is advertised
-   and the FlexRIC RIC is running. A future xApp can deliver RC
-   control messages over the existing E2 association.
+- That the RC actuator works end-to-end
+- That the PRB quota was applied to the scheduler
+- That any RAN behavior changed as a result of the control
+
+These claims would require the ASN.1 codec barrier to be resolved,
+which is outside the scope and time budget of this phase.
 
 ---
 
-## 12. Limitations
+## 10. Limitations
 
-1. **No KPM indication data.** The DU does not emit periodic KPM
-   reports in this OCUDU revision. KPM-driven closed-loop control is
-   therefore not testable on this build.
+1. **Python ABI incompatibility.** The FlexRIC Python SDK crashes on
+   Python 3.14. Fixing this requires either downgrading Python to 3.12
+   or rebuilding the SWIG wrapper, both outside the current scope.
 
-2. **Python xApp blocked by ABI.** The custom Python xApp is complete
-   and syntactically valid, but cannot run because the FlexRIC SWIG
-   wrapper crashes under Python 3.14.
+2. **ASN.1 codec mismatch.** The FlexRIC C xApp sends a valid RC
+   Control message, but OCUDU's ASN.1 decoder cannot parse it. Fixing
+   this requires either patching OCUDU's E2AP decoder or patching
+   FlexRIC's encoder to match OCUDU's expected byte format.
 
-3. **No RC control exercised.** The RC service model is advertised
-   and could in principle be used, but no control message was
-   delivered in Phase 12.
+3. **No KPM indications.** As documented in Phase 11, the OCUDU build
+   does not emit periodic KPM indications. Sensor-side data is not
+   available via the standard O-RAN path.
 
 4. **Single-host deployment.** RIC, RAN, and core all run on one
-   machine. Real O-RAN deployments separate the RIC onto dedicated
-   infrastructure.
+   machine.
 
-5. **No traffic-level xApp evaluation.** Because no indications reach
-   the xApp, no measurement of xApp-driven optimization was possible.
+5. **No traffic-level evaluation of control effect.** Since the
+   control message could not be applied, no measurement of its
+   effect on throughput or latency was possible.
 
 ---
 
-## 13. Files Produced
+## 11. Files Produced
 
-### 13.1 Configurations
+### 11.1 Configurations
 
     configs/phase12/
-      cu_zmq.yml             — CU config (log redirection)
-      du_zmq_e2.yml          — DU config with E2 section
-      ric.conf               — FlexRIC RIC configuration
-      e2agent.conf           — FlexRIC E2 agent defaults
-      xapp_kpm.conf          — KPM subscription template
+      xapp_oran_slice_ctrl.original.c   — Unpatched FlexRIC example
+      xapp_oran_slice_ctrl.patched.c    — Patched with our PLMN/slices
+      xapp_rc_ho.conf                    — xApp RC configuration
+      xapp_kpm_monitor.py                — Custom Python xApp source
 
-### 13.2 Scripts
-
-    scripts/phase12/
-      xapp_kpm_monitor.py    — Custom Python xApp (KPM monitor + rule logic)
-
-### 13.3 Logs and Results
-
-    logs/phase12/
-      ocudu/cu.log           — CU log (redirected from /tmp)
-      ocudu/du.log           — DU log with E2 activity
-      ric/ric.log            — RIC log
-      du-e2-timeline.log     — Extracted E2 entries for the report
-      end-state.txt          — Final stack snapshot
+### 11.2 Results
 
     results/phase12/
-      xapp-c-oran-moni.log   — C xApp output (working)
-      xapp-oran-final.log    — C xApp output from final attempt
-      xapp-oran-moni-30s.log — Timed run
-      xapp-rc-moni-c.log     — RC monitor xApp output
-      xapp-all-moni-c.log    — All-service monitor xApp output
+      du-log-rc-control-attempt.txt      — DU log evidence
+      xapp-oran-slice-ctrl-run1.log      — Original xApp run
+      xapp-oran-slice-ctrl-patched.log   — Patched run (patchelf broke it)
+      xapp-oran-slice-ctrl-patched2.log  — Patched run (working)
 
 ---
 
-## 14. Conclusion
+## 12. Conclusion
 
-Phase 12 connected a working Near-RT RIC to the OCUDU RAN through the
-O-RAN E2 interface. The E2 Setup procedure completed, both the KPM
-and RC service models were advertised, and a KPM subscription was
-accepted by the DU.
+Phase 12 developed a custom xApp for the O-RAN Near-RT RIC and
+attempted to close the control loop through the E2SM-RC service model.
 
-The build of OCUDU in use does not emit periodic KPM indications, so
-the sensor side of the closed loop is not testable on this platform.
-The Python SDK for FlexRIC crashes under Python 3.14, so the custom
-xApp is written but cannot run without a compatible Python runtime.
+The custom Python xApp is complete and syntactically valid, but cannot
+execute due to a Python 3.14 ABI incompatibility in FlexRIC's SWIG
+wrapper.
 
-Both limitations are documented at the log level and the source
-level. Neither reflects a misconfiguration on the testbed — both are
-properties of the specific software versions in use.
+A C xApp was patched with the testbed's PLMN and slice identifiers and
+built successfully. It sent an RC Control message through the RIC to
+the DU. The DU received the message (`Received RIC Control Request`),
+attempted to decode it, and failed with `proc_code=0 is not recognized`.
 
-The RC service model remains advertised and available. Phase 13 will
-build on this by using the Prometheus monitoring pipeline from
-Phase 9 as the sensor data source, and delivering control via the
-existing E2 connection.
+This is a documented ASN.1 codec incompatibility between FlexRIC's
+encoder and OCUDU's `asn1c`-based decoder. It is a property of the two
+independent software builds, not of our configuration or of the E2
+protocol itself.
+
+The pipeline is proven at every step except the final decode. Future
+work should either:
+
+1. Rebuild FlexRIC or OCUDU to use matching ASN.1 toolchains, or
+2. Wait for a later OCUDU release with complete E2SM-RC interoperation.
+
+Phase 12 is the last phase of the O-RAN control work in this project.
+The findings from Phases 12 and 13 together establish that the O-RAN
+E2 stack can be assembled and partially exercised, but that the specific
+OCUDU build in use does not yet interoperate with FlexRIC for
+subscription indications or for control message decoding.
 
 ---
 

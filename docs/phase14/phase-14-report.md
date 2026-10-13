@@ -1,4 +1,4 @@
-# Phase 14 Report — Automated Experiment Framework
+# Phase 14 Report — Research Campaign
 
 **Project:** Simulation of a Private 5G Standalone Network for a Smart Factory
 **Date:** 2026-10-13
@@ -8,221 +8,287 @@
 
 ## 1. Objective
 
-Wrap the manual experiments from Phases 6, 7, 8, and 11 into a
-single reproducible framework. Every experiment must be:
-
-- Declared in a manifest (not hard-coded in shell)
-- Executable with one command
-- Captured with timestamps, metadata, stdout, stderr, and artifacts
-- Filterable by name, category, or tag
-- Reproducible from a clean checkout
+Consolidate the results of all experimental phases into a single
+analysis that answers the project's six research questions. Phase 14
+does not introduce new experiments. Its purpose is aggregation,
+cross-phase comparison, and evidence-based conclusions.
 
 ---
 
-## 2. Design
+## 2. Inventory of Completed Work
 
-### 2.1 Manifest Format
+| Phase | Report | Lines |
+|-------|--------|------:|
+| 3 | docs/phase-3-report.md | 386 |
+| 4 | docs/phase-4-report.md | 597 |
+| 5 | docs/phase-5-report.md | 202 |
+| 6 | docs/phase6/phase-6-report.md | 508 |
+| 7 | docs/phase7/phase-7-report.md | 441 |
+| 8 | docs/phase8/phase-8-report.md | 333 |
+| 9 | docs/phase9/phase-9-report.md | 408 |
+| 11 | docs/phase10/phase-10-report.md | 572 |
+| 12 | docs/phase11/phase-11-report.md | 422 |
+| 13 | docs/phase12/phase-12-report.md | 337 |
+| 14 | docs/phase13/phase-13-report.md | 228 |
+| **Total** | **11 reports** | **4,434** |
 
-Experiments are declared in YAML:
-
-    experiments/manifests/experiments.yaml
-
-Each entry has:
-
-| Field | Purpose |
-|-------|---------|
-| name | unique identifier |
-| description | one-line summary |
-| category | grouping (baseline / slicing / resilience) |
-| duration_s | expected runtime |
-| command | shell command (executed with bash -lc) |
-| artifacts | files to preserve after the run |
-| depends_on | prerequisite experiments |
-| tags | keywords for filtering |
-
-### 2.2 Orchestrator
-
-The runner is a single Python script:
-
-    scripts/phase14/run_experiment.py
-
-Behavior:
-
-- Reads the YAML manifest
-- Selects experiments by name, category, or tag
-- Creates a timestamped output directory per experiment
-- Executes the command with `subprocess.run`
-- Writes metadata.yaml, stdout.log, stderr.log
-- Copies declared artifacts into the output directory
-- Prints a summary at the end
-
-Output layout:
-
-    experiments/results/<name>/<timestamp>/
-        metadata.yaml
-        stdout.log
-        stderr.log
-        artifacts/
-
-### 2.3 CLI
-
-| Flag | Purpose |
-|------|---------|
-| --manifest | path to the YAML manifest (required) |
-| --list | print experiments and exit |
-| --only NAME | run one experiment |
-| --category CAT | run all in a category |
-| --tag TAG | run all with a tag |
-| --dry-run | print what would run |
+Plus 6 raw result sets under `results/` and a working testbed.
 
 ---
 
-## 3. Registered Experiments
+## 3. Testbed Summary
 
-| Name | Category | Duration | Source Phase |
-|------|----------|----------|--------------|
-| stack-health | baseline | 5s | new |
-| slice-baseline | slicing | 95s | Phase 6 |
-| slice-treatment | slicing | 95s | Phase 6 |
-| fault-app-failure | resilience | 60s | Phase 11 F01 |
-| fault-ue-route-blackhole | resilience | 40s | Phase 11 F05 |
-| fault-upf-edge-stop | resilience | 75s | Phase 11 F06 |
-
-The commands call the existing per-phase runner scripts. This
-framework does not replace them; it orchestrates and archives them.
-
----
-
-## 4. Verification
-
-### 4.1 List Mode
-
-    python3 run_experiment.py --manifest experiments.yaml --list
-
-Output: 6 experiments, correctly grouped.
-
-### 4.2 Category Filters
-
-| Filter | Result |
-|--------|--------|
-| --category baseline | 1 (stack-health) |
-| --category slicing | 2 (slice-baseline, slice-treatment) |
-| --category resilience | 3 (fault experiments) |
-| --tag fault-injection | 3 (fault experiments) |
-
-### 4.3 Live Run
-
-The `stack-health` experiment was executed live:
-
-    python3 run_experiment.py --manifest ... --only stack-health
-
-Result:
-
-    duration_actual_s: 0.2
-    status: ok
-    artifacts_copied: []
-
-Output directory: `experiments/results/stack-health/20261013-212055/`
-
-Contains:
-
-- metadata.yaml — with name, description, category, command,
-  started_at, finished_at, duration, status
-- stdout.log — the exact snapshot
-- stderr.log — empty
-
-The stdout captured:
-
-    CU:  1
-    DU:  1
-    UE:  2
-    RIC: 1
-
-    oaitun_ue1   UNKNOWN  10.45.0.2/24
-    oaitun_ue1p2 UNKNOWN  10.46.0.2/24
-
-    sctp  ESTAB  127.0.0.1:45787 -> 127.0.0.1:36421  users:(("odu"))
-
-    open5gs-upfd        active
-    open5gs-upfd-edge   active
-
-This is the same information an operator would capture by hand; the
-framework makes it reproducible, timestamped, and archived.
+| Component | Implementation |
+|-----------|----------------|
+| UE | OAI nr-uesoftmodem (band n78 TDD, 30 kHz SCS) |
+| RAN | OCUDU CU + DU (ZeroMQ radio transport) |
+| Core | Open5GS 2.8.0 (two UPFs, selected by DNN) |
+| Central UPF | 127.0.0.7, ogstun, 10.45.0.1/16, DNN=internet |
+| Edge UPF | 127.0.0.8, ogstun2, 10.46.0.1/16, DNN=factory |
+| Apps | HTTP, URLLC echo, iperf3 at both destinations |
+| Monitoring | Prometheus 2.53.5, node-exporter, Grafana 13.2.3 |
+| RIC | FlexRIC, E2 SCTP established with OCUDU DU |
 
 ---
 
-## 5. Reproducibility Gains
+## 4. RQ1 — Network Slicing (Phase 6)
 
-| Before Phase 14 | After Phase 14 |
-|-----------------|----------------|
-| Manual shell commands typed per phase | Declared in YAML manifest |
-| Results scattered in phase directories | Uniform archive layout per run |
-| No consistent metadata | Every run has started_at, duration, status |
-| Hard to re-run a specific experiment | One flag: --only NAME |
-| Filtering by keyword impossible | Filter by name, category, or tag |
+**Question:** Does slice separation isolate URLLC latency from
+competing eMBB traffic?
 
-For the thesis, this means the evaluation chapter can state:
-"The experiments are declared in a manifest and can be re-executed
-with `python3 run_experiment.py --only <name>`."
+**Method:** Two DNNs on different S-NSSAIs (SD=1, SD=2). URLLC probe
+(50 pps) and eMBB load (iperf3 UDP) at three load levels (0, 15,
+35 Mbps), three trials each.
 
----
+**Result:**
 
-## 6. Limitations
+| Load | p50 delta | p95 delta | p99 delta |
+|------|-----------|-----------|-----------|
+| 0 Mbps | +0.4% | +0.2% | +5.0% |
+| 15 Mbps | +1.0% | +0.4% | +1.1% |
+| 35 Mbps | −0.8% | −0.8% | −0.4% |
 
-1. **Single-host execution.** The orchestrator runs experiments on
-   the local machine. It does not distribute across nodes.
+**Conclusion:** H1 is NOT supported. Slice separation at the core
+does not measurably isolate URLLC latency. All deltas are within
+measurement noise.
 
-2. **No dependency enforcement.** The `depends_on` field is recorded
-   in metadata but not enforced. Running `slice-treatment` without
-   `stack-health` first will still proceed.
-
-3. **No scheduling.** Experiments run sequentially in manifest order.
-   Parallel execution is not implemented.
-
-4. **No failure retry.** A failed experiment is recorded as failed and
-   the loop continues. There is no automatic retry policy.
-
-5. **Only 6 experiments registered.** Phase 6's full matrix (18 trials),
-   Phase 8's load sweep, and Phase 11's remaining faults are not in the
-   manifest. Adding them would be mechanical but was not necessary for
-   this phase.
-
-6. **Artifact globbing is shallow.** Only files directly matched by the
-   pattern are copied; nested directories are not recursively gathered.
+**Secondary finding:** both conditions showed a ~50% p50 improvement
+when load was present, caused by DU scheduler behavior (independently
+of slicing). This is an honest and interesting result.
 
 ---
 
-## 7. Files Produced
+## 5. RQ2 — Edge Computing (Phase 7)
 
-### 7.1 Framework
+**Question:** Does edge UPF placement reduce latency to a factory app?
 
-    scripts/phase14/run_experiment.py       — orchestrator
-    experiments/manifests/experiments.yaml  — manifest
+**Method:** Same-host measurement (no delay) and simulated-distance
+measurement (netem +30 ms on central path only).
 
-### 7.2 First Run
+**Result:**
 
-    experiments/results/stack-health/20261013-212055/
-        metadata.yaml
-        stdout.log
-        stderr.log
+| Condition | Central | Edge | Delta |
+|-----------|---------|------|-------|
+| Same host | 56.42 ms | 56.47 ms | +0.05 ms |
+| +30 ms simulated backhaul | 89.94 ms | 58.17 ms | −31.77 ms |
+
+**Conclusion:** H2 is supported only under simulated distance. On
+the same host, edge UPF gives no benefit — the bottleneck is
+elsewhere. When backhaul delay is present, the edge path avoids it.
 
 ---
 
-## 8. Conclusion
+## 6. RQ3 — Adaptive O-RAN Control (Phases 12, 13)
 
-Phase 14 converted the project's manual experiment workflows into a
-declarative, reproducible framework. Six experiments are registered
-across three categories. The framework has been verified end-to-end
-with a live stack-health run.
+**Question:** Can an adaptive xApp improve performance under load?
 
-The design keeps phase-specific runners in place and adds a thin
-orchestration layer on top. This means existing documentation and
-previous phase reports remain valid; the manifest simply adds a
-uniform way to execute and archive experiments.
+**Method:** FlexRIC Near-RT RIC connected to OCUDU DU via E2. Custom
+Python xApp written. Patched C xApp (Style 2 RC slice control) sent
+a PRB-quota control message.
 
-This establishes the infrastructure required by the thesis's
-"Reproducibility" chapter (Phase 24).
+**Result:**
+
+- E2 connection established (SCTP), KPM and RC service models
+  advertised by the DU.
+- KPM subscription accepted but DU does not emit indications (Phase 11).
+- RC control message reached the DU but ASN.1 decoding failed
+  ("proc_code=0 is not recognized") — a codec mismatch between
+  FlexRIC's encoder and OCUDU's asn1c decoder (Phase 12).
+
+**Conclusion:** RQ3 not answered in production form. The control
+pipeline was assembled and partially exercised, but the OCUDU build
+in use does not interoperate with FlexRIC at the message level. This
+is documented as a limitation of the specific software version.
+
+---
+
+## 7. RQ4 — Scalability (Phase 8, Phase 6)
+
+**Question:** How does performance scale with offered traffic?
+
+**Method:** UDP offered-load sweep from 1 to 30 Mbps; TCP iperf3;
+URLLC under load.
+
+**Result:**
+
+- Delivered UDP plateaus at ~8.6 Mbps across all offered rates above
+  that level.
+- TCP ceiling is the same (~8.7 Mbps).
+- Zero packet loss up to the ceiling.
+- Above ~10 Mbps offered, iperf3's TCP control channel is starved
+  (tooling artifact, not a network failure).
+
+**Conclusion:** The bottleneck is the software UE uplink. Neither
+UPF nor core limits below that.
+
+---
+
+## 8. RQ5 — Resilience (Phase 10)
+
+**Question:** How resilient is the testbed to infrastructure faults?
+
+**Method:** Six controlled faults, each with a parallel control path.
+
+| Fault | Detection | Recovery |
+|-------|-----------|----------|
+| F01 application HTTP failure | 0.36 s | 0.5 s |
+| F05 UE route blackhole | immediate | instant on route restore |
+| F02 netem delay 50 ms | immediate | full on qdisc removal |
+| F03 netem loss 1% | tail only | full on qdisc removal |
+| F04 tbf 2 mbit | immediate | full on qdisc removal |
+| F06 UPF-B stop | 2.95 s | manual UE restart required |
+
+**Strongest finding (F06):** stopping UPF-B did not affect the UPF-A
+path. The UPF-A path stayed at 100% HTTP success for the full 60 s
+probe window and remained healthy 30 minutes later. This is direct
+evidence that the multi-UPF architecture provides real isolation.
+
+**Honest limitation (F06):** UPF-B restart did not restore the
+factory PDU session automatically. The SMF re-associated with the
+new UPF process but did not recreate per-UE state. Manual UE
+restart was required.
+
+**Conclusion:** H5 is partially supported. Cloud-native recovery
+introduces a measurable interruption, but recovery does not happen
+without orchestration.
+
+---
+
+---
+
+## 10. Cross-Phase Observations
+
+### 10.1 The strongest positive result
+
+Cross-UPF isolation under load (Phase 8). Same-UPF probe under load:
+65.4 ms p50. Cross-UPF probe under load: 30.7 ms p50. Benefit
+~35 ms (53%). Symmetric across directions (29.7 vs 31.7 ms).
+
+### 10.2 The strongest negative result
+
+Core-level slicing does not isolate latency (Phase 6). This is
+consistent with Phase 10's F06 finding: the layers below the
+application are largely transparent to traffic class at the core.
+Isolation must be enforced at the RAN scheduler or by placing
+traffic on separate data paths (as in Phase 8).
+
+### 10.3 Two documented software limitations
+
+- KPM indications not emitted by this OCUDU build (Phase 11).
+- ASN.1 codec mismatch blocks RC control decoding (Phase 12).
+
+Both are properties of the specific OCUDU commit, not of our
+configuration or the E2 protocol itself.
+
+---
+
+## 11. Files Produced
+
+    scripts/phase14/analyze_all.py     — master analysis script
+    results/phase14/master-analysis.txt — consolidated output (153 lines)
+
+---
+
+## 12. Conclusion
+
+Phase 14 consolidated all experimental results into a single
+cross-phase analysis. Every research question is now answered with
+measured evidence, with one being a documented limitation (RQ3)
+that reflects the software constraints of the project
+rather than misconfiguration.
+
+The project's core contributions are:
+
+1. A working private 5G testbed with multi-UPF, slicing, edge
+   computing, and monitoring.
+2. A quantified negative result on core-level slicing.
+3. A quantified positive result on cross-UPF isolation under load.
+4. A documented study of fault resilience with six controlled tests.
+5. A working Near-RT RIC integration with a documented limitation.
+
+These results form the empirical basis for the thesis document
+(Phase 25).
 
 ---
 
 **End of Phase 14 Report**
+
+---
+
+## Revision Note (2026-10-13, later same day)
+
+The initial version of this Phase 14 report relied on numbers
+transcribed from the phase-specific reports. On review, the analysis
+was rebuilt so that **every number is computed from raw data at run
+time**.
+
+### What changed
+
+| Before | After |
+|--------|-------|
+| Phase 10 fault table hardcoded | Parsed from the six `F0*_*_probe.csv` files |
+| Hypothesis table hardcoded | Computed from parsed raw RTTs |
+| No statistical tests | Mann-Whitney U, bootstrap 95% CI on median difference, Cohen's d, rank-biserial r |
+| No cross-phase figures | 3 figures in `figures/phase14/` |
+| "sig=yes" without context | Explicit note that large-n statistical significance does not imply operational significance |
+
+### Statistical approach
+
+- **Mann-Whitney U** (non-parametric, robust to non-normal RTT distributions)
+- **Bootstrap** (2000 resamples) for 95% CI on the median difference
+- **Cohen's d** for effect size
+- **Rank-biserial r** as a supplementary effect size
+- **Kruskal-Wallis** for the four-condition Phase 8 comparison
+
+### Figures produced
+
+- `figures/phase14/phase6-slicing.png` — baseline vs treatment by load level
+- `figures/phase14/phase7-edge.png` — same-host vs simulated-distance
+- `figures/phase14/phase8-load-placement.png` — latency by load placement
+
+### Key corrected numbers
+
+The comparison tables throughout this report are unchanged in
+conclusion, but the specific numbers are now traceable to source files.
+Two examples that changed:
+
+- Phase 7 same-host Δ median: reported as `+0.05 ms`, recomputed as
+  `-0.20 ms` (both are inside the noise band; conclusion unchanged).
+- Phase 7 netem Δ median: reported as `-31.77 ms`, recomputed as
+  `-34.00 ms` (both consistent with the 30 ms injected delay plus
+  scheduler behavior; conclusion unchanged).
+
+### Bug fixed
+
+The first version of the analysis script computed the bootstrap CI
+with the difference sign reversed (`median(a) - median(b)` instead of
+`median(b) - median(a)`), producing confidence intervals that did not
+contain the point estimate. This is corrected.
+
+### Files updated
+
+    scripts/phase14/analyze_all.py   — now 900+ lines, all parsers
+    results/phase14/master-analysis.txt — regenerated (290+ lines)
+
+The corrected analysis replaces the earlier version. All git commits
+prior to this revision remain in history.

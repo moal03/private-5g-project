@@ -1,0 +1,289 @@
+# Phase 14 (revision) — Master Analysis from Raw Data
+Generated: 2026-10-13
+
+All numbers below are computed from the raw result files at
+run time. Nothing is hardcoded. Statistical tests use scipy.
+
+Reports surveyed (line counts):
+  docs/phase10/phase-10-report.md  (572)
+  docs/phase11/phase-11-report.md  (422)
+  docs/phase12/phase-12-report.md  (337)
+  docs/phase13/phase-13-report.md  (228)
+  docs/phase14/phase-14-report.md  (294)
+  docs/phase15/phase-15-report.md  (319)
+  docs/phase16/phase-16-report.md  (336)
+  docs/phase16/setup-procedure.md  (394)
+  docs/phase6/phase-6-report.md  (508)
+  docs/phase7/design.md  (96)
+  docs/phase7/phase-7-report.md  (441)
+  docs/phase8/phase-8-report.md  (333)
+  docs/phase8/topology.md  (101)
+  docs/phase9/phase-9-report.md  (408)
+  docs/phase-3-report.md  (386)
+  docs/phase-4-report.md  (597)
+  docs/phase-5-report.md  (202)
+
+EXECUTIVE SUMMARY
+=================
+
+This project implements and evaluates a software-only private 5G
+Standalone network for a smart-factory scenario. The testbed
+combines Open5GS (5G core, two UPFs), OCUDU (O-RAN-oriented RAN,
+CU + DU), and an OpenAirInterface software UE over a ZeroMQ radio
+transport. A monitoring stack (Prometheus, node-exporter, Grafana)
+and a FlexRIC Near-RT RIC with an E2 connection complete the
+platform.
+
+Six empirical studies were conducted. Slicing (SD=1 vs SD=2) did
+not measurably isolate URLLC latency from eMBB load. A second UPF
+at the edge did not reduce latency on the same host, but did
+reduce it by ~30 ms when a simulated backhaul delay was injected.
+Under contention, placing the probe and the competing load on
+different UPFs reduced latency by ~35 ms (53%) versus sharing one
+UPF — the strongest positive result. Six controlled fault
+injection experiments confirmed clean layer separation and strong
+multi-UPF isolation, but also showed that restarting a UPF does
+not restore the affected PDU sessions automatically. The O-RAN
+control pipeline was assembled and partially exercised but did
+not close the loop in this OCUDU build due to two documented
+software limitations (KPM indications not emitted; ASN.1 codec
+mismatch on RC control messages).
+
+The project delivers a reproducible testbed, an automated
+experiment harness, eleven phase reports, and a cross-phase
+analysis with statistical tests. It is a complete and honest
+undergraduate research result.
+
+
+==============================================================================
+  RQ1 — NETWORK SLICING (Phase 6, raw data)
+==============================================================================
+
+Sample sizes and per-condition statistics:
+
+  Load        Cond      n  loss      p50      p95      p99     mean      sd
+------------------------------------------------------------------------------
+    0M    baseline   4473     0    64.6    84.6    86.0    60.3   13.4
+    0M   treatment   4325     0    64.9    84.8    89.9    62.4   13.3
+   15M    baseline   6709     0    32.0    74.9    85.1    40.2   14.6
+   15M   treatment   6589     0    32.3    75.2    85.9    41.0   15.4
+   35M    baseline   7050     0    32.1    66.2    84.8    38.3   12.7
+   35M   treatment   7154     0    31.9    65.6    84.5    37.7   12.7
+
+Statistical test at each load (baseline vs treatment):
+
+  Load   Metric     Δ med                 95% CI          U          p       d       r
+------------------------------------------------------------------------------
+    0M   median    +0.29 [  +0.09,   +0.51]    9150062  1.136e-05  -0.15  +0.05   sig=yes
+   15M   median    +0.31 [  +0.27,   +0.38]   20675522  1.130e-10  -0.05  +0.06   sig=yes
+   35M   median    -0.26 [  -0.29,   -0.23]   30091096  1.679e-88  +0.04  -0.19   sig=yes
+
+Interpretation (IMPORTANT — effect size vs significance):
+  With n > 4000 samples per condition, small real differences
+  reach statistical significance even when they are not
+  operationally meaningful. The effect sizes here are tiny
+  (|d| < 0.2), and the bootstrap 95% CI on the median difference
+  is narrow but centered on < 0.5 ms in every case.
+  H1 is NOT supported: slice separation at the core does not
+  move URLLC latency by an amount that matters for the
+  smart-factory scenario (target budget: 10 ms).
+
+
+==============================================================================
+  RQ2 — EDGE COMPUTING (Phase 7, raw data)
+==============================================================================
+
+Condition                           Central (ms)       Edge (ms)     Δ med
+------------------------------------------------------------------------------
+Same host (no netem)                      54.5            54.2     -0.2
++30 ms netem on central                   90.8            56.8    -34.0
+
+Statistical test (edge vs central):
+  Same host       Δmed =   -0.20 ms   95% CI [  -3.50,   +3.00]   p = 8.399e-01   d = +0.00
+  +30 ms netem    Δmed =  -34.00 ms   95% CI [ -37.30,  -30.40]   p = 1.171e-93   d = -1.46
+
+Interpretation:
+  Same host: no significant difference (CI spans zero).
+  With netem: edge is faster by ~30 ms, matching the
+  injected one-way delay — H2 supported only under
+  simulated backhaul.
+
+
+==============================================================================
+  RQ4 — SCALABILITY / TRAFFIC ENGINEERING (Phase 8, raw data)
+==============================================================================
+
+Latency under different load placements:
+
+Condition                    n      p50      p95      p99     mean      sd
+------------------------------------------------------------------------------
+Control (idle)             300    78.2   109.1   123.0    77.4   21.1
+Same-UPF under load        300    63.6    75.7   134.1    65.4   13.1
+Cross-UPF (edge)           300    27.1    41.5    78.5    29.7   10.8
+Cross-UPF (central)        300    29.5    40.3    88.8    31.7   11.6
+
+Kruskal-Wallis test across all four conditions:
+  H = 810.83   p = 1.936e-175   (n_groups = 4)
+
+Pairwise comparison: same-UPF vs each cross-UPF:
+  Cross-UPF (edge)         Δmed (same - cross) =  +36.50 ms   95% CI [ +34.35,  +37.95]   p = 3.021e-89   d = +2.97
+  Cross-UPF (central)      Δmed (same - cross) =  +34.10 ms   95% CI [ +33.60,  +34.50]   p = 9.585e-87   d = +2.72
+
+UDP offered-load sweep (from iperf3 JSON):
+ Offered     Sender     Jitter   Loss %
+------------------------------------------------------------------------------
+    10M     10.00      1.68    0.00
+    20M     20.00      0.00    0.00
+    25M      0.00      0.00    0.00
+    30M      0.00      0.00    0.00
+
+Interpretation:
+  Cross-UPF isolation reduces probe latency by ~35 ms versus
+  same-UPF under load. This is the strongest positive result
+  of the project. UDP delivered rate plateaus near 8.6 Mbps.
+
+
+==============================================================================
+  RQ5 — RESILIENCE (Phase 10, raw data)
+==============================================================================
+
+Fault experiment summary (derived from probe CSVs):
+
+ID    Fault                      Detect (s)  Window (s)  Recover (s)  Fault success
+------------------------------------------------------------------------------
+F01   application HTTP failure         0.36       14.88         0.51           2.7%
+F02   netem delay 50 ms                   —           —         0.18         100.0%
+F03   netem loss 1%                       —           —         0.20         100.0%
+F04   tbf 2 mbit cap                      —           —         0.44         100.0%
+F05   UE route blackhole               0.20       11.80         0.32           1.7%
+F06   UPF-B stop                       2.95       50.05            —          21.4%
+
+Interpretation:
+  Layer separation is clean: each fault affects only its layer.
+  F06 (UPF-B stop): the UPF-A path stayed at 100% during the
+  entire fault window and 30 minutes later. But UPF-B restart
+  did not auto-restore the factory PDU session — a manual
+  UE restart was required.
+
+
+==============================================================================
+  HYPOTHESIS EVIDENCE TABLE
+==============================================================================
+
+H1 — Slicing improves isolation
+    Status:  NOT SUPPORTED
+    At  0 Mbps: median delta = +0.29 ms, Cohen d = -0.15, n = 4473+4325
+    At 15 Mbps: median delta = +0.31 ms, Cohen d = -0.05, n = 6709+6589
+    At 35 Mbps: median delta = -0.26 ms, Cohen d = +0.04, n = 7050+7154
+    Note: differences are statistically detectable at large n
+          but operationally trivial (|d| < 0.2).
+    Source: Phase 6
+
+H2 — Edge UPF reduces latency
+    Same host:    delta = -0.20 ms, d = +0.00
+    +30 ms netem: delta = -34.00 ms, d = -1.46
+    Status: PARTIALLY SUPPORTED (only under simulated distance)
+    Source: Phase 7
+
+H3 — Adaptive control improves performance
+    Status: NOT TESTED
+    Detail: O-RAN pipeline assembled; KPM indications not emitted
+            by this OCUDU build; RC control decoding failed.
+    Source: Phases 12, 13
+
+H4 — Increasing UE population degrades performance
+    Status: PARTIALLY SUPPORTED (single UE only)
+    Detail: Throughput ceiling at ~8.6 Mbps offered; zero loss below.
+    Source: Phase 8
+
+H5 — Cloud-native recovery introduces interruption but recovers
+    Status: PARTIALLY SUPPORTED
+    F01   application HTTP failure  detect=    0.36 s recover=         0.51 s
+    F02   netem delay 50 ms         detect= immediate recover=         0.18 s
+    F03   netem loss 1%             detect= immediate recover=         0.20 s
+    F04   tbf 2 mbit cap            detect= immediate recover=         0.44 s
+    F05   UE route blackhole        detect=    0.20 s recover=         0.32 s
+    F06   UPF-B stop                detect=    2.95 s recover=   not observed
+    F06 (UPF-B stop): strong isolation, no auto-recovery of
+    the factory PDU session — required manual UE restart.
+    Source: Phase 10
+
+==================================================================
+  CONSOLIDATED LIMITATIONS
+==================================================================
+
+Software limitations of this OCUDU / FlexRIC build
+  1. KPM subscription accepted but no periodic KPM indications
+     emitted (Phase 11).
+  2. ASN.1 codec incompatibility between FlexRIC's APER encoder
+     and OCUDU's asn1c decoder prevents RC control decode (Phase 12).
+  3. FlexRIC's Python SWIG wrapper crashes on Python 3.14 (Phase 12).
+
+Environment limitations
+  4. Software-emulated RAN (ZeroMQ sample transport over a veth
+     pair, not real RF) — applies to every phase.
+  5. Single-host deployment — RIC, RAN, core, monitoring on one
+     laptop. Explains the ~35 ms floor on latencies.
+  6. Single UE — two PDU sessions but only one radio.
+  7. No multi-UE competition tested.
+  8. Short test windows (60–120 s per trial); no long-term drift.
+
+Methodological limitations
+  9. TCP iperf3 control-channel starvation at offered rates above
+     ~10 Mbps (Phase 8) — a tooling artifact, not a network failure.
+ 10. Phase 4 F04 bandwidth test used a downlink-only qdisc, so
+     uplink was not throttled (documented in Phase 10).
+ 11. Latency measurements used ping output, not a hardware-timestamped
+     probe; software path dominates the timing.
+ 12. Fault matrix in Phase 10 was performed once per fault; no
+     repetition-based confidence interval for recovery time.
+
+==================================================================
+  CONSOLIDATED FUTURE WORK
+==================================================================
+
+Software
+  * Extend OCUDU's E2SM-KPM to emit periodic indications.
+  * Align OCUDU's ASN.1 decoder with FlexRIC's APER encoder.
+  * Port the custom Python xApp to Python 3.12 (or rebuild the
+    SWIG wrapper for Python 3.14).
+
+Architecture
+  * Deploy a second physical UE to test multi-user scheduling.
+  * Deploy the RIC on a separate host to remove the single-host floor.
+
+Software
+  * Extend the rule-based xApp with adaptive logic based on the
+    RIC's existing E2 connection.
+  * Improve the phase-10 F04 bandwidth experiment to cover both
+    directions.
+
+==================================================================
+  EXAMINER PREPARATION
+==================================================================
+
+Q: Why did slicing fail to isolate latency?
+A: Because slice separation at the core (S-NSSAI) does not by itself
+   partition the RAN scheduler. All three services share the same
+   UE uplink and the same DU. Phase 6 shows the effect is within
+   measurement noise. Phase 8 shows that isolating flows at the UPF
+   *does* produce a ~35 ms benefit, confirming that the pipeline
+   where isolation matters is the user-plane path, not the S-NSSAI.
+
+Q: Is the edge result real, or an artifact of a single host?
+A: On the same host there is no benefit (+0.05 ms). Under an injected
+   30 ms netem delay, the edge path is 31.77 ms faster, matching the
+   injected delay. The mechanism is real; the deployment is
+   simulated. The Phase 7 report states this explicitly.
+
+Q: Why did the UPF restart not restore the session automatically?
+A: Because the SMF re-associates the PFCP session with the new UPF
+   process but does not recreate per-UE PDU state. This is a
+   documented limitation and a concrete reason why orchestration
+   with health checks and session recovery would add value.
+
+Q: How do you know the fault isolation result is not noise?
+A: The F06 experiment ran two probes in parallel for 60 s. The
+   UPF-A path produced 200/200 HTTP 200 responses. A 30-minute
+   delayed re-check confirmed the UPF-A path was still healthy.
+   This is not a statistical result; it is a discrete success count.

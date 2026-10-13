@@ -401,7 +401,7 @@ differentiation variable is deferred to Phase 7+.
 
 4. **Slice enforcement is at core, not RAN.** The RAN scheduler receives the
    S-NSSAI via F1 signalling but does not apply slice-specific PRB
-   partitioning. That is a Phase 12 concern (RAN-level slice scheduling).
+   partitioning. That is a Phase 11 concern (RAN-level slice scheduling).
 
 5. **The baseline p99 anomaly at 0 Mbps.** One baseline trial produced a
    lower median than the others (56.9 ms), which shifted the pooled p99. The
@@ -465,7 +465,7 @@ The negative result motivates the remaining phases:
 
 - **Phase 7 (Edge UPF):** Tests whether user-plane placement affects
   latency.
-- **Phase 12 (Near-RT RIC / xApp):** Tests whether RAN-level adaptive
+- **Phase 11 (Near-RT RIC / xApp):** Tests whether RAN-level adaptive
   control can achieve latency isolation that core-only slicing cannot.
 
 The measurement infrastructure, slice configuration, and multi-session UE

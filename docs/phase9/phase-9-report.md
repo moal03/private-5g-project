@@ -352,7 +352,7 @@ to host contention and is documented in the limitations.
 
 2. **No RAN metrics yet.** The OCUDU CU and DU do not expose
    Prometheus metrics in the current configuration. Adding them would
-   require an E2/KPM interface, which is Phase 12 (RIC) work.
+   require an E2/KPM interface, which is Phase 11 (RIC) work.
 
 3. **Host-based only.** All monitoring is on the single host. In a
    real private 5G deployment, the RAN and edge UPF would run on
@@ -399,7 +399,7 @@ Two real-world constraints were documented:
 2. Heavy disk activity during installation caused the UE to lose
    its 5G registration. A restart restored the data path.
 
-The dashboard and metric pipeline give a foundation for Phase 12
+The dashboard and metric pipeline give a foundation for Phase 11
 (Near-RT RIC and xApp) where additional RAN-level metrics will be
 correlated with what the UPF and host already report.
 

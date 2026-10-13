@@ -1,0 +1,7 @@
+Experiment: F01_192801
+Fault type: application HTTP server failure
+Target: edge-app HTTP server on 10.70.0.10:8090
+Probe: UE -> edge HTTP, every 200ms for 40s
+Fault injected:   2026-10-13T19:28:12+03:30
+Recovery started: 2026-10-13T19:28:27+03:30
+Probe CSV: /home/mohammad/projects/private-5g/results/phase10/F01_192801_probe.csv

@@ -1,0 +1,9 @@
+Experiment: F06_193922
+Fault type: core-function failure (systemctl stop open5gs-upfd-edge)
+Target: UPF-B (edge DNN, factory path)
+Control: 10.60.0.10 (central factory-app, via UPF-A)
+Affected: 10.70.0.10 (edge-app, via UPF-B)
+Fault injected:   2026-10-13T19:39:30+03:30
+Recovery started: 2026-10-13T19:39:53+03:30
+Edge probe CSV:    /home/mohammad/projects/private-5g/results/phase10/F06_193922_edge_probe.csv
+Central probe CSV: /home/mohammad/projects/private-5g/results/phase10/F06_193922_central_probe.csv

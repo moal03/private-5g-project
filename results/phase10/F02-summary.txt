@@ -1,0 +1,59 @@
+Phase 10 — F02 Network Delay Injection (netem on ogstun2)
+==========================================================
+
+Date: 2026-10-13T19:33
+
+Fault type: tc netem delay 50ms on ogstun2 egress
+Interface:  ogstun2 (UPF-B TUN, edge DNN)
+Affected:   10.70.0.10 (edge-app HTTP 8080)
+Control:    10.60.0.10 (central factory-app HTTP 8080)
+Probes:     Two parallel HTTP GET loops from UE, 200 ms interval, 30 s
+
+Timeline:
+- t=0s     probes started
+- t=+6s    netem delay added on ogstun2
+- t=+18s   netem delay removed, qdisc restored to fq_codel
+- t=+30s   probes finished
+
+RESULT — EDGE (affected path):
+- Baseline:  n=27/27  p50=137ms  p95=168ms  min=89ms  max=642ms
+- Fault:     n=49/49  p50=247ms  p95=300ms  min=167ms max=349ms
+- Recovery:  n=62/62  p50=132ms  p95=170ms  min=79ms  max=203ms
+- p50 delta (fault - baseline): +110 ms
+
+RESULT — CENTRAL (control path, unrelated UPF):
+- Baseline:  n=27/27  p50=134ms  p95=166ms  min=89ms  max=651ms
+- Fault:     n=59/59  p50=155ms  p95=215ms  min=97ms  max=220ms
+- Recovery:  n=62/62  p50=142ms  p95=184ms  min=92ms  max=205ms
+- p50 delta (fault - baseline): +21 ms
+
+OBSERVATIONS:
+
+1. The 50 ms egress delay on ogstun2 produces ~110 ms HTTP RTT increase
+   on the edge path. This is expected: Python urllib opens a fresh TCP
+   connection per request, so two packets per request traverse the
+   delayed direction (SYN-ACK and the HTTP 200 response). 2 x 50 ms =
+   ~100 ms, plus natural jitter.
+
+2. The edge path fully recovered to baseline p50 (132 ms vs baseline
+   137 ms) after the qdisc was removed. No residual effect.
+
+3. The central path showed a small +21 ms p50 increase during the fault
+   window and returned to baseline in the recovery window. This effect
+   is small relative to baseline mdev (~25 ms) and is most likely
+   UE-side CPU contention when both probes are running concurrently.
+   It does not establish cross-path interference at the UPF level.
+
+4. Both PDU sessions and the UE registration were unaffected.
+
+CLEANUP:
+- ogstun2 qdisc restored to fq_codel (default)
+- No persistent rules left behind
+
+CONCLUSION:
+F02 demonstrates:
+- A one-way delay can be injected on a single UPF's TUN interface.
+- The affected path's HTTP round-trip time increases as expected.
+- The delay fully reverses when the qdisc is removed.
+- Both DNN paths share the UE uplink, so this fault did not isolate
+  the UE's radio processing, but it did isolate the UPF-B egress.

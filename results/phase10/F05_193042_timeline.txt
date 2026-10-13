@@ -1,0 +1,8 @@
+Experiment: F05_193042
+Fault type: UE routing failure (blackhole route)
+Target: 10.70.0.10 (edge-app)
+Control: 10.60.0.10 (central factory-app)
+Fault injected:   2026-10-13T19:30:48+03:30
+Recovery started: 2026-10-13T19:31:00+03:30
+Edge probe CSV:    /home/mohammad/projects/private-5g/results/phase10/F05_193042_edge_probe.csv
+Central probe CSV: /home/mohammad/projects/private-5g/results/phase10/F05_193042_central_probe.csv

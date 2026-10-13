@@ -1,0 +1,42 @@
+Phase 10 — F01 Application Failure and Recovery
+================================================
+
+Date: 2026-10-13T19:28
+
+Fault type: HTTP server process termination
+Target:     edge-app HTTP server on 10.70.0.10:8090
+Probe:      UE -> edge-app, HTTP GET every 200 ms for 40 s
+
+Probe statistics:
+- Total attempts:    199
+- HTTP 200 OK:       124
+- URLError:           75
+- Success rate:     62.3%
+
+Timeline (relative to fault injection at 19:28:12):
+- t=+0.36s   first failed HTTP request
+- t=+15.00s  server restarted
+- t=+15.24s  last failed HTTP request
+- t=+15.51s  first successful HTTP request after restart
+
+Recovery:
+- Server restart -> first successful request: ~0.5 s
+- Recovery was bounded by Python HTTP server startup time.
+
+Application HTTP latency (only successful responses):
+- Baseline: p50=149ms p95=237ms max=312ms
+- Recovery: p50=135ms p95=182ms max=268ms
+  (post-recovery latency matches baseline; no residual effect)
+
+Network state during the fault:
+- UE remained registered (NAS state unchanged)
+- Both PDU sessions persisted (oaitun_ue1 and oaitun_ue1p2)
+- The other path (central app at 10.60.0.10) was unaffected
+- The 5G stack, CU, DU, and both UPFs were unaffected
+
+Conclusion:
+F01 demonstrates clean layer separation: killing the application
+server affects only the application. The UE, PDU sessions, RAN, and
+core are unaffected. This is the expected result for an
+application-level fault and confirms the probe pipeline detects the
+fault within 0.36 s.

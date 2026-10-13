@@ -1,0 +1,86 @@
+====================================================================================================
+Phase 15 — Validation Report
+Generated: 2026-10-13T21:54:37.144319
+====================================================================================================
+
+Every material claim in the phase reports is verified against
+its raw source file. Classification:
+  verified    = |computed - claimed| / claimed <= 0.5%
+  close       = within claim tolerance but not exact
+  mismatch    = beyond tolerance
+  unverifiable= source files missing or calc not runnable
+
+
+====================================================================================================
+PHASE 6 — 8 claims
+====================================================================================================
+
+ID                     Status            Claimed     Computed       Δ%  Description
+----------------------------------------------------------------------------------------------------
+P6-BAS-P50-0M          verified             64.6       64.744   +0.22%  Phase 6 baseline p50 at 0 Mbps
+P6-BAS-P50-15M         verified             32.0       31.959   -0.13%  Phase 6 baseline p50 at 15 Mbps
+P6-BAS-P50-35M         verified             32.1       32.108   +0.03%  Phase 6 baseline p50 at 35 Mbps
+P6-TRE-P50-0M          verified             64.9       64.892   -0.01%  Phase 6 treatment p50 at 0 Mbps
+P6-TRE-P50-15M         verified             32.3       32.272   -0.09%  Phase 6 treatment p50 at 15 Mbps
+P6-TRE-P50-35M         verified             31.9       31.850   -0.16%  Phase 6 treatment p50 at 35 Mbps
+P6-BAS-P95-0M          verified             84.6       84.637   +0.04%  Phase 6 baseline p95 at 0 Mbps
+P6-TRE-P95-0M          verified             84.8       84.823   +0.03%  Phase 6 treatment p95 at 0 Mbps
+
+====================================================================================================
+PHASE 7 — 4 claims
+====================================================================================================
+
+ID                     Status            Claimed     Computed       Δ%  Description
+----------------------------------------------------------------------------------------------------
+P7-CENTRAL-SH          verified            56.42       56.423   +0.00%  Phase 7 same-host central ping avg
+P7-EDGE-SH             verified            56.47       56.472   +0.00%  Phase 7 same-host edge ping avg
+P7-CENTRAL-NETEM       verified            89.94       89.936   -0.00%  Phase 7 +30ms netem central ping avg
+P7-EDGE-NETEM          verified            58.17       58.166   -0.01%  Phase 7 +30ms netem edge ping avg
+
+====================================================================================================
+PHASE 8 — 4 claims
+====================================================================================================
+
+ID                     Status            Claimed     Computed       Δ%  Description
+----------------------------------------------------------------------------------------------------
+P8-Control             verified             77.4       77.381   -0.02%  Phase 8 Control ping mean
+P8-Same-UPF            verified             65.4       65.378   -0.03%  Phase 8 Same-UPF ping mean
+P8-Cross-UPF-E         verified             29.7       29.735   +0.12%  Phase 8 Cross-UPF-E ping mean
+P8-Cross-UPF-C         verified             31.7       31.673   -0.09%  Phase 8 Cross-UPF-C ping mean
+
+====================================================================================================
+PHASE 11 — 6 claims
+====================================================================================================
+
+ID                     Status            Claimed     Computed       Δ%  Description
+----------------------------------------------------------------------------------------------------
+P11-F01-DETECT         close                0.36        0.355   -1.39%  F01 application failure detection latency
+P11-F06-DETECT         verified             2.95        2.950   +0.00%  F06 UPF-B stop detection latency
+P11-F05-EDGE-OK        verified                1        1.000   +0.00%  F05 edge probe success during fault window
+P11-F05-CTRL-OK        verified               59       59.000   +0.00%  F05 control probe OK during fault window
+P11-F06-CTRL-TOTAL     verified              200      200.000   +0.00%  F06 control probe OK over the whole 60 s run
+P11-F06-CTRL-FAULT     informational         info       76.000      n/a  F06 control probe OK within the UPF-B stop window
+
+====================================================================================================
+PHASE 15 — 4 claims
+====================================================================================================
+
+ID                     Status            Claimed     Computed       Δ%  Description
+----------------------------------------------------------------------------------------------------
+P15-P7-SH-CENTRAL      verified            56.42       56.423   +0.00%  Phase 14 restates Phase 7 same-host central ping avg
+P15-P7-NETEM-DELTA     verified           -31.77      -31.771   +0.00%  Phase 14 restates Phase 7 netem delta (edge - central)
+P15-P8-SAMEUPF         verified             65.4       65.378   -0.03%  Phase 14 restates Phase 8 same-UPF ping mean
+P15-P8-CROSSUPF        verified             29.7       29.735   +0.12%  Phase 14 restates Phase 8 cross-UPF edge ping mean
+
+====================================================================================================
+SUMMARY
+====================================================================================================
+  Total claims : 26
+  verified     : 24  (92.3%)
+  close        : 1  (3.8%)
+  mismatch     : 0  (0.0%)
+  unverifiable : 0  (0.0%)
+  informational: 1  (3.8%)
+
+  RESULT: No mismatches. All claims are supported by
+          the raw data to within tolerance.

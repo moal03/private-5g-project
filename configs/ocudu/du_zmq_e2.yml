@@ -6,7 +6,7 @@ gnb_id_bit_length: 22
 gnb_du_id: 0
 
 log:
-  filename: /home/mohammad/projects/private-5g/logs/phase12/ocudu/du.log
+  filename: /home/mohammad/projects/private-5g/logs/phase11/ocudu/du.log
   all_level: info
 
 f1ap:

@@ -1,4 +1,4 @@
-# Phase 14 — Experiment Manifest
+# Phase 13 — Experiment Manifest
 #
 # Each entry defines one reproducible experiment. The orchestrator
 # (run_experiment.py) reads this file, executes the named command,
@@ -72,42 +72,42 @@ experiments:
     tags: [slicing, treatment]
 
   - name: fault-app-failure
-    description: Phase 11 F01 — HTTP server failure and recovery
+    description: Phase 10 F01 — HTTP server failure and recovery
     category: resilience
     duration_s: 60
     command: |
       cd ~/projects/private-5g
-      ./scripts/phase11/f01_runner.sh
+      ./scripts/phase10/f01_runner.sh
     artifacts:
-      - results/phase11/F01_*_probe.csv
-      - results/phase11/F01_*_timeline.txt
+      - results/phase10/F01_*_probe.csv
+      - results/phase10/F01_*_timeline.txt
     depends_on: [stack-health]
     tags: [resilience, fault-injection, application]
 
   - name: fault-ue-route-blackhole
-    description: Phase 11 F05 — UE route blackhole and recovery
+    description: Phase 10 F05 — UE route blackhole and recovery
     category: resilience
     duration_s: 40
     command: |
       cd ~/projects/private-5g
-      ./scripts/phase11/f05_runner.sh
+      ./scripts/phase10/f05_runner.sh
     artifacts:
-      - results/phase11/F05_*_edge_probe.csv
-      - results/phase11/F05_*_central_probe.csv
-      - results/phase11/F05_*_timeline.txt
+      - results/phase10/F05_*_edge_probe.csv
+      - results/phase10/F05_*_central_probe.csv
+      - results/phase10/F05_*_timeline.txt
     depends_on: [stack-health]
     tags: [resilience, fault-injection, routing]
 
   - name: fault-upf-edge-stop
-    description: Phase 11 F06 — stop UPF-B and observe recovery
+    description: Phase 10 F06 — stop UPF-B and observe recovery
     category: resilience
     duration_s: 75
     command: |
       cd ~/projects/private-5g
-      ./scripts/phase11/f06_runner.sh
+      ./scripts/phase10/f06_runner.sh
     artifacts:
-      - results/phase11/F06_*_edge_probe.csv
-      - results/phase11/F06_*_central_probe.csv
-      - results/phase11/F06_*_timeline.txt
+      - results/phase10/F06_*_edge_probe.csv
+      - results/phase10/F06_*_central_probe.csv
+      - results/phase10/F06_*_timeline.txt
     depends_on: [stack-health]
     tags: [resilience, fault-injection, core-function]

@@ -1,8 +1,0 @@
-Experiment: F02_193342
-Fault type: netem delay 50ms on ogstun2 (edge UPF egress)
-Target: 10.70.0.10 (edge-app)
-Control: 10.60.0.10 (central factory-app, unaffected path)
-Fault injected:   2026-10-13T19:33:48+03:30
-Recovery started: 2026-10-13T19:34:00+03:30
-Edge probe CSV:    /home/mohammad/projects/private-5g/results/phase11/F02_193342_edge_probe.csv
-Central probe CSV: /home/mohammad/projects/private-5g/results/phase11/F02_193342_central_probe.csv
