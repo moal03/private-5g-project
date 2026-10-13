@@ -240,3 +240,63 @@ These results form the empirical basis for the thesis document
 ---
 
 **End of Phase 15 Report**
+
+---
+
+## Revision Note (2026-10-13, later same day)
+
+The initial version of this Phase 15 report relied on numbers
+transcribed from the phase-specific reports. On review, the analysis
+was rebuilt so that **every number is computed from raw data at run
+time**.
+
+### What changed
+
+| Before | After |
+|--------|-------|
+| Phase 11 fault table hardcoded | Parsed from the six `F0*_*_probe.csv` files |
+| Hypothesis table hardcoded | Computed from parsed raw RTTs |
+| No statistical tests | Mann-Whitney U, bootstrap 95% CI on median difference, Cohen's d, rank-biserial r |
+| No cross-phase figures | 3 figures in `figures/phase15/` |
+| "sig=yes" without context | Explicit note that large-n statistical significance does not imply operational significance |
+
+### Statistical approach
+
+- **Mann-Whitney U** (non-parametric, robust to non-normal RTT distributions)
+- **Bootstrap** (2000 resamples) for 95% CI on the median difference
+- **Cohen's d** for effect size
+- **Rank-biserial r** as a supplementary effect size
+- **Kruskal-Wallis** for the four-condition Phase 8 comparison
+
+### Figures produced
+
+- `figures/phase15/phase6-slicing.png` — baseline vs treatment by load level
+- `figures/phase15/phase7-edge.png` — same-host vs simulated-distance
+- `figures/phase15/phase8-load-placement.png` — latency by load placement
+
+### Key corrected numbers
+
+The comparison tables throughout this report are unchanged in
+conclusion, but the specific numbers are now traceable to source files.
+Two examples that changed:
+
+- Phase 7 same-host Δ median: reported as `+0.05 ms`, recomputed as
+  `-0.20 ms` (both are inside the noise band; conclusion unchanged).
+- Phase 7 netem Δ median: reported as `-31.77 ms`, recomputed as
+  `-34.00 ms` (both consistent with the 30 ms injected delay plus
+  scheduler behavior; conclusion unchanged).
+
+### Bug fixed
+
+The first version of the analysis script computed the bootstrap CI
+with the difference sign reversed (`median(a) - median(b)` instead of
+`median(b) - median(a)`), producing confidence intervals that did not
+contain the point estimate. This is corrected.
+
+### Files updated
+
+    scripts/phase15/analyze_all.py   — now 900+ lines, all parsers
+    results/phase15/master-analysis.txt — regenerated (290+ lines)
+
+The corrected analysis replaces the earlier version. All git commits
+prior to this revision remain in history.
