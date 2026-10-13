@@ -6,7 +6,7 @@ gnb_id_bit_length: 22
 ran_node_name: ocudu-cu
 
 log:
-  filename: /tmp/ocudu-cu.log
+  filename: /home/mohammad/projects/private-5g/logs/phase12/ocudu/cu.log
   all_level: info
 
 cu_cp:
