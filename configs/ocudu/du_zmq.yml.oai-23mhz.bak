@@ -1,0 +1,51 @@
+# OCUDU DU configuration for OAI UE integration
+# Following the OCUDU "Using the OAI UE" tutorial
+# Band n78 (TDD, 3.5 GHz), 20 MHz, 30 kHz SCS, ZeroMQ ports 4556/4557
+# Critical: tx_gain must be -12 to prevent OAI UE FFT saturation
+
+gnb_id: 411
+gnb_id_bit_length: 22
+gnb_du_id: 0
+
+log:
+  filename: /tmp/ocudu-du.log
+  all_level: info
+
+f1ap:
+  addrs:
+    - 127.0.0.1
+  bind_addrs:
+    - 127.0.0.1
+  retry_connection: true
+
+f1u:
+  bind_port: 2152
+  peer_port: 2152
+  socket:
+    - bind_addr: 127.0.0.3
+      ext_addr: 127.0.0.3
+      sst: 1
+      sd: 1
+      five_qi: 9
+
+cell_cfg:
+  dl_arfcn: 632628
+  band: 78
+  channel_bandwidth_MHz: 20
+  common_scs: 30
+  plmn: "99970"
+  tac: 1
+  pci: 1
+
+ru_sdr:
+  device_driver: zmq
+  device_args: tx_port=tcp://127.0.0.1:4556,rx_port=tcp://127.0.0.1:4557,base_srate=23.04e6
+  srate: 23.04
+  tx_gain: -12
+  rx_gain: 0
+
+pcap:
+  f1ap_enable: false
+  f1u_enable: false
+  mac_enable: false
+  rlc_enable: false

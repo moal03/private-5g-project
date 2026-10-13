@@ -324,3 +324,210 @@ The Phase 4 network is a complete O-RAN-oriented 5G SA testbed running
 entirely in software. It is ready for Phase 5 (private 5G / NPN
 configuration) and later phases (slicing, edge UPF, monitoring, O-RAN
 control).
+
+---
+
+# Phase 4-B — OAI UE + OCUDU Integration (Alternative Implementation)
+
+**Date:** 2026-10-13
+**Status:** Complete — user plane verified
+
+## B.1 Motivation
+
+The srsUE implementation (Phase 4-A) uses band n3 (FDD, 1800 MHz) with
+15 kHz subcarrier spacing. While fully functional, this is not the most
+representative configuration for a private 5G smart-factory deployment.
+Industrial 5G deployments in the 3.5 GHz range use band n78 (TDD) with
+30 kHz subcarrier spacing.
+
+This section documents a second Phase 4 implementation using the
+OpenAirInterface (OAI) NR UE, which supports band n78 TDD natively.
+
+## B.2 Software Environment
+
+| Component | Version |
+|-----------|---------|
+| OCUDU | 26.10.0 (unchanged from 4-A) |
+| Open5GS | 2.8.0~resolute6 |
+| OAI UE | duranta-project/openairinterface5g, develop branch |
+| OAI commit | 6f89078b409e671fa566782f67aae9de52fd55d8 (2026-10-09) |
+| OAI ZMQ plugin | liboai_zmqdevif.so (built with same commit) |
+| Build system | CMake + Ninja |
+
+**Key difference from 4-A:** The OAI UE version must contain the
+UCI-on-PUSCH mapping fix and the TRS processing patch. The `develop`
+branch contains both; earlier branches (w25, w39) do not.
+
+## B.3 Cell Configuration
+
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| Band | n78 (TDD) | Standard industrial 5G band |
+| DL ARFCN | 632628 | ~3.489 GHz |
+| SSB ARFCN | 632256 | Derived by OCUDU |
+| SCS | 30 kHz | Standard for n78 |
+| Channel bandwidth | 20 MHz | Standard NR bandwidth |
+| PRBs | 51 | Matches 20 MHz at 30 kHz SCS |
+
+## B.4 DU Configuration Changes
+
+The DU config required two additions that were absent in 4-A:
+
+    cell_cfg:
+      ...
+      csi:
+        csi_rs_enabled: true
+      pucch:
+        nof_cell_csi_res: 1
+      tdd_ul_dl_cfg:
+        dl_ul_tx_period: 5
+        nof_dl_slots: 3
+        nof_dl_symbols: 10
+        nof_ul_slots: 1
+        nof_ul_symbols: 2
+
+- `csi_rs_enabled` and `nof_cell_csi_res` are required for the OAI UE
+  to perform CSI measurements on scheduled channels.
+- `tdd_ul_dl_cfg` ensures the DU and UE agree on the TDD slot pattern.
+  Without it, the UE derives a different pattern from SIB1 and PUSCH
+  scheduling fails.
+
+## B.5 UE Configuration — Modern Format
+
+The OAI UE uses the modern `pdu_sessions` format. This is critical:
+
+    uicc0 = {
+      imsi = "999700000000001";
+      key = "...";
+      opc = "...";
+      pdu_sessions = ({ dnn = "internet"; nssai_sst = 1; nssai_sd = 1; });
+    };
+
+The `nssai_sd = 1` field is required. Without it, the UE requests
+SD = 0xFFFFFF (wildcard), and the AMF rejects the PDU session with
+"mismatch for allowed NSSAI".
+
+## B.6 Network Namespace Setup
+
+Unlike srsUE (which has a built-in `[gw] netns` option), the OAI UE
+has no native namespace support. A manual namespace and veth pair are
+required:
+
+    sudo ip netns add ue1
+    sudo ip link add v-eth1 type veth peer name v-ue1
+    sudo ip link set v-ue1 netns ue1
+    sudo ip addr add 10.200.1.1/24 dev v-eth1
+    sudo ip link set v-eth1 up
+    sudo ip netns exec ue1 ip addr add 10.200.1.2/24 dev v-ue1
+    sudo ip netns exec ue1 ip link set v-ue1 up
+
+The ZMQ endpoints are configured to use the veth IPs (10.200.1.1 and
+10.200.1.2) so that samples can cross the namespace boundary:
+
+    # DU
+    device_args: tx_port=tcp://10.200.1.1:4556,rx_port=tcp://10.200.1.2:4557
+
+    # UE
+    zmq = ( { tx_channels = ( "tcp://10.200.1.2:4557" );
+              rx_channels = ( "tcp://10.200.1.1:4556" ); } );
+
+Without this, both sides would use 127.0.0.1 in their respective
+namespaces, and samples would never reach each other.
+
+## B.7 Milestones Achieved
+
+| Milestone | Evidence |
+|-----------|----------|
+| B-A: N2 (CU↔AMF) | `Connected to AMF. Supported PLMNs: 99970` |
+| B-B: F1 (DU↔CU) | `F1 Setup: Procedure completed successfully` |
+| B-C: UE Registration | `Received Registration Accept with result 3GPP` |
+| B-D: PDU Session | `UE IPv4: 10.45.0.3` |
+| B-E: User Plane | `5 packets transmitted, 5 received, 0% packet loss` |
+
+## B.8 User-Plane Validation
+
+Ping from inside namespace `ue1`:
+
+    PING 10.45.0.1 (10.45.0.1) 56(84) bytes of data.
+    64 bytes from 10.45.0.1: icmp_seq=1 ttl=64 time=104 ms
+    64 bytes from 10.45.0.1: icmp_seq=2 ttl=64 time=98.2 ms
+    ...
+    --- 10.45.0.1 ping statistics ---
+    10 packets transmitted, 10 received, 0% packet loss
+    rtt min/avg/max/mdev = 74.064/94.190/139.469/18.475 ms
+
+GTP-U capture on ogstun confirmed the round trip:
+
+    IP 10.45.0.3 > 10.45.0.1: ICMP echo request
+    IP 10.45.0.1 > 10.45.0.3: ICMP echo reply
+    (repeated for each ping)
+
+## B.9 Comparison: srsUE (4-A) vs OAI UE (4-B)
+
+| Aspect | Phase 4-A (srsUE) | Phase 4-B (OAI UE) |
+|--------|-------------------|---------------------|
+| Band | n3 (FDD, 1800 MHz) | n78 (TDD, 3500 MHz) |
+| SCS | 15 kHz | 30 kHz |
+| Duplex | FDD | TDD |
+| PRBs | 106 | 51 |
+| Namespace | Native (`[gw] netns`) | Manual veth pair |
+| UE IP | 10.45.0.4 | 10.45.0.3 |
+| Ping avg | ~30 ms | ~94 ms |
+| Standards fit | 4G heritage | Native 5G SA |
+| Community support | Mature | Experimental |
+| Effort to run | Config alignment | Source branch + rebuild |
+
+**Conclusion:** Both implementations work. For smart-factory
+demonstration purposes, srsUE (4-A) is faster and easier to reproduce.
+For standards-representative 5G SA behavior, OAI UE (4-B) is the
+better model. Both should be cited in any published result.
+
+## B.10 Troubleshooting — Phase 4-B
+
+### Problem B1 — UCI-on-PUSCH failure (RLC max retransmissions)
+Symptom: UE reaches RRC Connected but fails at RLC max RETX on SRB 1.
+Cause: OAI versions before w33 lack the UCI-on-PUSCH fix.
+Fix: switched to `develop` branch (contains w41 + subsequent fixes).
+
+### Problem B2 — Segfault at RAU initialization
+Symptom: `[RAU] has loaded RFSIMULATOR device` followed by segfault.
+Cause: ZMQ plugin (`liboai_zmqdevif.so`) was built from an older
+source than the main binary.
+Fix: rebuild both with `ninja nr-uesoftmodem liboai_zmqdevif.so`.
+
+### Problem B3 — NSSAI SD mismatch
+Symptom: `NSSAI 1.16777215: mismatch for allowed NSSAI`.
+Cause: `pdu_sessions` without explicit `nssai_sd` requests wildcard SD.
+Fix: added `nssai_sd = 1` to `pdu_sessions`.
+
+### Problem B4 — Same-host routing shortcut
+Symptom: 100% packet loss on ping despite successful PDU session.
+Cause: both UE IP and UPF IP in host's `local` routing table.
+Fix: run UE in namespace via `ip netns exec ue1`.
+
+### Problem B5 — ZMQ endpoints across namespace
+Symptom: after namespace setup, no ZMQ traffic.
+Cause: 127.0.0.1 differs in each namespace.
+Fix: use veth IPs (10.200.1.1 and 10.200.1.2) in both DU and UE configs.
+
+## B.11 Evidence Files
+
+- `results/phase4/ue-config.conf` — OAI UE config
+- `results/phase4/du-config.yml` — DU config with n78 TDD
+- `results/phase4/cu-config.yml` — CU config
+- `results/phase4/ue-namespace-run.log` — full UE log
+- `results/phase4/du-run.log` — full DU log
+- `captures/phase4-user-plane.pcap` — GTP-U ICMP capture
+
+## B.12 Phase 4-B Conclusion
+
+The OAI UE + OCUDU + Open5GS stack runs natively in 5G SA with band
+n78 TDD at 30 kHz SCS. Both control-plane (N2, F1) and user-plane
+(N3, F1-U) interfaces are fully operational. The user plane delivers
+ICMP traffic with 0% packet loss.
+
+The additional complexity over Phase 4-A (source branch selection,
+rebuilding the plugin, manual namespace creation, SD specification)
+reflects the earlier maturity stage of the OAI UE ZMQ integration.
+For production-like deployment, srsUE remains the more reliable choice.
+For standards-representative research, OAI UE provides the better model.

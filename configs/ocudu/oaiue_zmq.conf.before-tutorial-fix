@@ -1,0 +1,22 @@
+// Duranta OAI NR UE configuration for OCUDU DU over ZeroMQ
+// Based on OAI MR !3975 working configuration
+// Band n78 TDD, 40 MHz, 30 kHz SCS
+
+uicc0 = {
+  imsi = "999700000000001";
+  key = "465B5CE8B199B49FAA5F0A2EE238A6BC";
+  opc = "E8ED289DEBA952E4283B54E88E6183CA";
+  dnn = "internet";
+  nssai_sst = 1;
+  nssai_sd = 1;
+};
+
+// Radio parameters - must match the OCUDU DU
+r = 51;
+numerology = 1;
+band = 78;
+C = 3489420000;
+
+// UE behaviour
+ue-scan-carrier = 1;
+uecap_file = "/home/mohammad/projects/duranta-oai/targets/PROJECTS/GENERIC-NR-5GC/CONF/uecap_ports1.xml";

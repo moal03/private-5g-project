@@ -1,7 +1,5 @@
-# OCUDU DU configuration for Phase 4 integration with Open5GS
-# Software-radio (ZeroMQ) test setup, paired with the OCUDU CU.
-# Cell parameters match OCUDU's official srsUE example config
-# (gnb_rf_b210_fdd_srsUE.yml), adapted for our PLMN and topology.
+# OCUDU DU configuration — exact match to OCUDU tutorial
+# Band n78 TDD, 20 MHz, 30 kHz SCS, ZeroMQ ports 4556/4557
 
 gnb_id: 411
 gnb_id_bit_length: 22
@@ -29,31 +27,30 @@ f1u:
       five_qi: 9
 
 cell_cfg:
-  dl_arfcn: 368500
-  band: 3
+  dl_arfcn: 632628
+  band: 78
   channel_bandwidth_MHz: 20
-  common_scs: 15
+  common_scs: 30
   plmn: "99970"
   tac: 1
   pci: 1
-  pdcch:
-    dedicated:
-      ss2_type: common
-      dci_format_0_1_and_1_1: false
-    common:
-      ss0_index: 0
-      coreset0_index: 12
-  prach:
-    prach_config_index: 1
-  pdsch:
-    mcs_table: qam64
-  pusch:
-    mcs_table: qam64
+  csi:
+    csi_rs_enabled: true
+  pucch:
+    nof_cell_csi_res: 1
+  tdd_ul_dl_cfg:
+    dl_ul_tx_period: 5
+    nof_dl_slots: 3
+    nof_dl_symbols: 10
+    nof_ul_slots: 1
+    nof_ul_symbols: 2
 
 ru_sdr:
   device_driver: zmq
-  device_args: tx_port=tcp://127.0.0.1:2000,rx_port=tcp://127.0.0.1:2001,base_srate=23.04e6
+  device_args: tx_port=tcp://10.200.1.1:4556,rx_port=tcp://10.200.1.2:4557,base_srate=23.04e6
   srate: 23.04
+  tx_gain: -12
+  rx_gain: 0
 
 pcap:
   f1ap_enable: false
