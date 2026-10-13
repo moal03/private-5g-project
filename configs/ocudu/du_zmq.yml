@@ -22,8 +22,15 @@ f1u:
   socket:
     - bind_addr: 127.0.0.3
       ext_addr: 127.0.0.3
+    - bind_addr: 127.0.0.13
+      ext_addr: 127.0.0.13
       sst: 1
       sd: 1
+      five_qi: 9
+    - bind_addr: 127.0.0.23
+      ext_addr: 127.0.0.23
+      sst: 1
+      sd: 2
       five_qi: 9
 
 cell_cfg:
@@ -51,6 +58,65 @@ ru_sdr:
   srate: 23.04
   tx_gain: -12
   rx_gain: 0
+
+qos:
+  -
+    # 5QI = 9 e.g Video (Buffered Streaming) — PDB 300ms, PER 10^-6
+    five_qi: 9
+    pdcp:
+      tx:
+        sn: 18
+        discard_timer: 1500
+        status_report_required: false
+      rx:
+        sn: 18
+        t_reordering: 220
+        out_of_order_delivery: false
+    f1u_cu_up:
+      backoff_timer: 5
+    f1u_du:
+      backoff_timer: 5
+    rlc:
+      mode: am
+      am:
+        tx:
+          sn: 18
+          t-poll-retransmit: 100
+          max-retx-threshold: 32
+          poll-pdu: 16
+          poll-byte: -1
+          queue-size: 16384
+          queue-bytes: 6172672
+        rx:
+          sn: 18
+          t-reassembly: 20
+          t-status-prohibit: 10
+  -
+    # 5QI = 82 e.g Discrete Automation — PDB 10ms, PER 10^-4
+    five_qi: 82
+    pdcp:
+      tx:
+        sn: 12
+        discard_timer: 10
+        status_report_required: false
+      rx:
+        sn: 12
+        t_reordering: 1
+        out_of_order_delivery: false
+    f1u_cu_up:
+      backoff_timer: 5
+    f1u_du:
+      backoff_timer: 5
+    rlc:
+      mode: um-bidir
+      um-bidir:
+        tx:
+          sn: 6
+          queue-size: 16384
+          queue-bytes: 6172672
+        rx:
+          sn: 6
+          t-reassembly: 10
 
 pcap:
   f1ap_enable: false

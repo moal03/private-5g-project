@@ -1,0 +1,12 @@
+Condition:  baseline
+Load:       35 Mbps
+Trial:      3
+Start time: 2026-10-13T16:32:40+03:30
+URLLC rate: 50 pps
+URLLC dur:  90 s
+Load dur:   30 s
+End time:   2026-10-13T16:34:21+03:30
+URLLC CSV:  /home/mohammad/projects/private-5g/results/phase6/raw/baseline_load35_trial3_urllc.csv
+eMBB log:   /home/mohammad/projects/private-5g/results/phase6/raw/baseline_load35_trial3_embb.txt
+URLLC stdout:
+Done. Sent=2343 Received=2343 Loss=0.00%
