@@ -1,0 +1,28 @@
+Phase 7 — Multi-UPF Verification
+=================================
+
+Date: 2026-10-13
+Config: UPF-A (127.0.0.7, DNN=internet) and UPF-B (127.0.0.8, DNN=factory)
+
+Setup:
+- UE has two PDU sessions:
+  * internet DNN → UE IP 10.45.0.2 → interface oaitun_ue1
+  * factory  DNN → UE IP 10.46.0.2 → interface oaitun_ue1p2
+- Host TUN interfaces:
+  * ogstun  = 10.45.0.1/16 (created by UPF-A)
+  * ogstun2 = 10.46.0.1/16 (created by UPF-B)
+- Destinations:
+  * central: 10.60.0.10 (factory-app namespace)
+  * edge:    10.70.0.10 (edge-app namespace)
+
+Test A — Ping central (10.60.0.10) via internet DNN:
+  Captured on ogstun  (UPF-A): 6 packets  <-- expected
+  Captured on ogstun2 (UPF-B): 0 packets  <-- expected
+  Conclusion: central traffic anchored at UPF-A only.
+
+Test B — Ping edge (10.70.0.10) via factory DNN:
+  Captured on ogstun  (UPF-A): 0 packets  <-- expected
+  Captured on ogstun2 (UPF-B): 6 packets  <-- expected
+  Conclusion: edge traffic anchored at UPF-B only.
+
+VERDICT: Multi-UPF steering by DNN is PROVEN at the packet level.

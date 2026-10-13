@@ -1,0 +1,27 @@
+Phase 7 — Multi-UPF Final Analysis  (generated 2026-10-13T17:37:10.762391)
+==========================================================================
+
+--- Same-host (both UPFs on loopback, no added delay) ---
+  Ping central:   56.42 ms  (stdev 2.69)
+  Ping edge:      56.47 ms  (stdev 1.96)
+  Ping delta:    +0.05 ms
+  TCP central sender/receiver: 8.38 / 7.76 Mbps
+  TCP edge    sender/receiver: 8.63 / 7.97 Mbps
+
+--- Simulated distance (netem 30 ms on ogstun egress; edge unaffected) ---
+  Ping central:   89.94 ms  (stdev 2.42)
+  Ping edge:      58.17 ms  (stdev 1.91)
+  Ping delta:    -31.77 ms
+  TCP central sender/receiver: 8.13 / 7.58 Mbps
+  TCP edge    sender/receiver: 8.32 / 7.68 Mbps
+
+==========================================================================
+Comparison
+==========================================================================
+Metric                                         Same-host          +30 ms     Change
+--------------------------------------------------------------------------
+Central ping avg (ms)                              56.42           89.94     +33.51
+Edge ping avg (ms)                                 56.47           58.17      +1.69
+Delta (edge - central) ms                           0.05          -31.77     -31.82
+
+Effect of simulated backhaul delay: -31.82 ms

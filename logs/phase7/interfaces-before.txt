@@ -1,0 +1,5 @@
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+wlp0s20f3        UP             192.168.1.102/24 fe80::75d5:fc76:b10a:bc3a/64 
+ogstun           UP             10.45.0.1/16 10.46.0.1/16 2001:db8:cafe::1/48 fe80::d9f2:6589:b4db:f037/64 
+v-eth1@if7       UP             10.200.1.1/24 fe80::683c:5aff:fe1e:fc52/64 
+factory-host@if9 UP             10.60.0.1/24 fe80::e8f1:81ff:fef0:f574/64 

@@ -1,0 +1,32 @@
+=== Date ===
+2026-10-13T17:37:30+03:30
+
+=== Namespaces ===
+edge-app (id: 2)
+factory-app (id: 1)
+ue1 (id: 0)
+
+=== ogstun (UPF-A) ===
+    inet 10.45.0.1/16 brd 10.45.255.255 scope global ogstun
+
+=== ogstun2 (UPF-B) ===
+    inet 10.46.0.1/16 scope global ogstun2
+
+=== tc qdisc on ogstun ===
+qdisc netem 8001: root refcnt 2 limit 1000 delay 30ms seed 6947328496463431017
+
+=== UE namespace routes ===
+10.45.0.0/24 dev oaitun_ue1 proto kernel scope link src 10.45.0.2 
+10.46.0.0/24 dev oaitun_ue1p2 proto kernel scope link src 10.46.0.2 
+10.60.0.0/24 dev oaitun_ue1 scope link 
+10.70.0.0/24 dev oaitun_ue1p2 scope link 
+10.200.1.0/24 dev v-ue1 proto kernel scope link src 10.200.1.2 
+
+=== factory-app routes ===
+10.45.0.0/16 via 10.60.0.1 dev factory-ns 
+10.46.0.0/16 via 10.60.0.1 dev factory-ns 
+10.60.0.0/24 dev factory-ns proto kernel scope link src 10.60.0.10 
+
+=== edge-app routes ===
+10.46.0.0/16 via 10.70.0.1 dev edge-ns 
+10.70.0.0/24 dev edge-ns proto kernel scope link src 10.70.0.10 

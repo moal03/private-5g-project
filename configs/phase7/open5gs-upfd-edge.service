@@ -1,0 +1,23 @@
+[Unit]
+Description=Open5GS UPF Edge Daemon (edge-side UPF for factory DNN)
+After=network-online.target systemd-networkd.service open5gs-upfd.service
+Wants=systemd-networkd.service
+
+[Service]
+Type=simple
+
+User=open5gs
+Group=open5gs
+
+# Needed to create a new TUN interface (ogstun2) at startup
+AmbientCapabilities=CAP_NET_ADMIN
+CapabilityBoundingSet=CAP_NET_ADMIN
+
+Restart=always
+ExecStart=/usr/bin/open5gs-upfd -c /etc/open5gs/upf-edge.yaml
+RestartSec=2
+RestartPreventExitStatus=1
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
