@@ -378,10 +378,10 @@ than just automated process restart. It needs orchestration that:
 2. Detects that UE sessions are broken.
 3. Triggers UE re-registration or session re-establishment.
 
-This is exactly what a real cloud-native deployment with Kubernetes +
-service mesh + readiness probes would provide. The finding gives an
-**evidence-backed reason** why orchestration matters, rather than a
-checkbox for using Kubernetes.
+This is exactly what a proper orchestration layer with health checks
+and automated session recovery would provide. The finding gives an
+**evidence-backed reason** why orchestration matters in a real
+deployment.
 
 ### 10.6 Manual recovery
 
@@ -548,7 +548,7 @@ re-establish UE sessions. The SMF re-associates with the new UPF
 process, but does not recreate the per-UE session state. Manual
 orchestration is required. This is a concrete, evidence-backed reason
 why orchestration matters in a private 5G deployment, and it directly
-justifies future cloud-native work.
+justifies future work on automated session recovery.
 
 **4. Monitoring detects core-function failures but not
 application-layer faults.**

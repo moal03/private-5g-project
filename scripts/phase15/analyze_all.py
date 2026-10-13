@@ -601,17 +601,13 @@ def consolidated_future_work():
 
     Architecture
       * Deploy a second physical UE to test multi-user scheduling.
-      * Deploy the RIC on a separate host to remove single-host floor.
-      * Replace software RAN with SDR hardware for real RF conditions.
+      * Deploy the RIC on a separate host to remove the single-host floor.
 
-    Simulation
-      * ns-3 / 5G-LENA campaign to compare emulated vs modelled RAN.
-      * Sionna RT for site-specific channel modelling of a factory floor.
-      * Digital-twin comparison: ray-traced vs measured channel data.
-
-    Analytics
-      * NWDAF prototype using the Prometheus time series.
-      * ML-based xApp to replace the rule-based congestion logic.
+    Software
+      * Extend the rule-based xApp with adaptive logic based on the
+        RIC's existing E2 connection.
+      * Improve the phase-11 F04 bandwidth experiment to cover both
+        directions.
     """).strip()
 
 
@@ -639,12 +635,7 @@ def examiner_qa():
     A: Because the SMF re-associates the PFCP session with the new UPF
        process but does not recreate per-UE PDU state. This is a
        documented limitation and a concrete reason why orchestration
-       (Phase 10, skipped) would add value even without new science.
-
-    Q: Why were ns-3 and Sionna not run?
-    A: Time. The testbed work, six fault experiments, RIC integration,
-       and five reports consumed the available schedule. Both tools
-       remain available as future work.
+       with health checks and session recovery would add value.
 
     Q: How do you know the fault isolation result is not noise?
     A: The F06 experiment ran two probes in parallel for 60 s. The

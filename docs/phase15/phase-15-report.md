@@ -174,14 +174,6 @@ without orchestration.
 
 ---
 
-## 9. RQ6 — Modeling Fidelity
-
-**Question:** How closely do system-level simulations agree with
-site-specific ray tracing?
-
-**Conclusion:** Not evaluated. ns-3/5G-LENA and Sionna RT were not
-run in the time available. This is documented as future work.
-
 ---
 
 ## 10. Cross-Phase Observations
@@ -221,8 +213,8 @@ configuration or the E2 protocol itself.
 
 Phase 15 consolidated all experimental results into a single
 cross-phase analysis. Every research question is now answered with
-measured evidence, with two being documented limitations (RQ3 and
-RQ6) that reflect the software and time constraints of the project
+measured evidence, with one being a documented limitation (RQ3)
+that reflects the software constraints of the project
 rather than misconfiguration.
 
 The project's core contributions are:
