@@ -1,0 +1,113 @@
+# Phase 14 — Experiment Manifest
+#
+# Each entry defines one reproducible experiment. The orchestrator
+# (run_experiment.py) reads this file, executes the named command,
+# and stores stdout/stderr plus metadata under:
+#     experiments/results/<name>/<timestamp>/
+#
+# Fields:
+#   name         : unique identifier
+#   description  : one-line summary
+#   category     : grouping for reporting
+#   duration_s   : expected runtime (informational)
+#   command      : shell command to run (executed with `bash -lc`)
+#   artifacts    : paths that should be preserved after the run
+#   depends_on   : names of experiments that must have run first
+#   tags         : keywords for filtering
+
+experiments:
+
+  - name: stack-health
+    description: Read-only snapshot of the running testbed
+    category: baseline
+    duration_s: 5
+    command: |
+      echo "=== CU / DU / UE / RIC ==="
+      echo "CU:  $(ps aux | grep 'apps/cu/ocu' | grep -v grep | grep -v chrome | wc -l)"
+      echo "DU:  $(ps aux | grep 'apps/du/odu' | grep -v grep | grep -v chrome | wc -l)"
+      echo "UE:  $(ps aux | grep nr-uesoftmodem | grep -v grep | grep -v chrome | wc -l)"
+      echo "RIC: $(ps aux | grep nearRT-RIC | grep -v grep | wc -l)"
+      echo
+      echo "=== UE interfaces ==="
+      sudo ip netns exec ue1 ip -br addr 2>/dev/null | grep oaitun || true
+      echo
+      echo "=== E2 SCTP connection ==="
+      sudo ss -anp 2>/dev/null | grep 36421 | head -4 || true
+      echo
+      echo "=== Open5GS UPFs ==="
+      for svc in open5gs-upfd open5gs-upfd-edge; do
+          printf "  %-25s %s\n" "$svc" "$(systemctl is-active $svc)"
+      done
+      echo
+      echo "=== Memory ==="
+      free -h | head -2
+    artifacts: []
+    depends_on: []
+    tags: [baseline, read-only]
+
+  - name: slice-baseline
+    description: Phase 6 baseline — both DNNs on SD=1, one trial with no load
+    category: slicing
+    duration_s: 95
+    command: |
+      cd ~/projects/private-5g
+      ./scripts/phase6/run_trial.sh baseline 0 1
+    artifacts:
+      - results/phase6/raw/baseline_load0_trial1_urllc.csv
+      - results/phase6/raw/baseline_load0_trial1_meta.txt
+    depends_on: [stack-health]
+    tags: [slicing, baseline]
+
+  - name: slice-treatment
+    description: Phase 6 treatment — factory on SD=2, one trial with 15 Mbps load
+    category: slicing
+    duration_s: 95
+    command: |
+      cd ~/projects/private-5g
+      ./scripts/phase6/run_trial.sh treatment 15 1
+    artifacts:
+      - results/phase6/raw/treatment_load15_trial1_urllc.csv
+      - results/phase6/raw/treatment_load15_trial1_meta.txt
+    depends_on: [stack-health]
+    tags: [slicing, treatment]
+
+  - name: fault-app-failure
+    description: Phase 11 F01 — HTTP server failure and recovery
+    category: resilience
+    duration_s: 60
+    command: |
+      cd ~/projects/private-5g
+      ./scripts/phase11/f01_runner.sh
+    artifacts:
+      - results/phase11/F01_*_probe.csv
+      - results/phase11/F01_*_timeline.txt
+    depends_on: [stack-health]
+    tags: [resilience, fault-injection, application]
+
+  - name: fault-ue-route-blackhole
+    description: Phase 11 F05 — UE route blackhole and recovery
+    category: resilience
+    duration_s: 40
+    command: |
+      cd ~/projects/private-5g
+      ./scripts/phase11/f05_runner.sh
+    artifacts:
+      - results/phase11/F05_*_edge_probe.csv
+      - results/phase11/F05_*_central_probe.csv
+      - results/phase11/F05_*_timeline.txt
+    depends_on: [stack-health]
+    tags: [resilience, fault-injection, routing]
+
+  - name: fault-upf-edge-stop
+    description: Phase 11 F06 — stop UPF-B and observe recovery
+    category: resilience
+    duration_s: 75
+    command: |
+      cd ~/projects/private-5g
+      ./scripts/phase11/f06_runner.sh
+    artifacts:
+      - results/phase11/F06_*_edge_probe.csv
+      - results/phase11/F06_*_central_probe.csv
+      - results/phase11/F06_*_timeline.txt
+    depends_on: [stack-health]
+    tags: [resilience, fault-injection, core-function]

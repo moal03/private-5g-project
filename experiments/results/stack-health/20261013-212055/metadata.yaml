@@ -1,0 +1,23 @@
+name: stack-health
+description: Read-only snapshot of the running testbed
+category: baseline
+tags:
+- baseline
+- read-only
+depends_on: []
+expected_duration_s: 5
+command: "echo \"=== CU / DU / UE / RIC ===\"\necho \"CU:  $(ps aux | grep 'apps/cu/ocu'\
+  \ | grep -v grep | grep -v chrome | wc -l)\"\necho \"DU:  $(ps aux | grep 'apps/du/odu'\
+  \ | grep -v grep | grep -v chrome | wc -l)\"\necho \"UE:  $(ps aux | grep nr-uesoftmodem\
+  \ | grep -v grep | grep -v chrome | wc -l)\"\necho \"RIC: $(ps aux | grep nearRT-RIC\
+  \ | grep -v grep | wc -l)\"\necho\necho \"=== UE interfaces ===\"\nsudo ip netns\
+  \ exec ue1 ip -br addr 2>/dev/null | grep oaitun || true\necho\necho \"=== E2 SCTP\
+  \ connection ===\"\nsudo ss -anp 2>/dev/null | grep 36421 | head -4 || true\necho\n\
+  echo \"=== Open5GS UPFs ===\"\nfor svc in open5gs-upfd open5gs-upfd-edge; do\n \
+  \   printf \"  %-25s %s\\n\" \"$svc\" \"$(systemctl is-active $svc)\"\ndone\necho\n\
+  echo \"=== Memory ===\"\nfree -h | head -2\n"
+started_at: '2026-10-13T21:20:55.088723'
+finished_at: '2026-10-13T21:20:55.290813'
+duration_actual_s: 0.2
+status: ok
+artifacts_copied: []
