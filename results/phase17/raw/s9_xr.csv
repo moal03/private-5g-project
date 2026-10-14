@@ -1,0 +1,10 @@
+run,mean_flow_delay_ms,mean_flow_throughput_mbps
+s9_heavy_seed1,0.0,0.0
+s9_heavy_seed2,0.0,0.0
+s9_heavy_seed3,0.0,0.0
+s9_light_seed1,6.21885,11.2237
+s9_light_seed2,6.12344,11.2394
+s9_light_seed3,5.82407,11.2651
+s9_medium_seed1,338.359,8.37989
+s9_medium_seed2,335.389,8.37888
+s9_medium_seed3,339.12,8.36471

@@ -271,3 +271,26 @@ the author's own work.
 
 If you reuse any part of this work in academic context, please cite
 the repository.
+
+---
+
+## Phase 17 — ns-3 / 5G-LENA Simulation (added 2026-10-15)
+
+The real testbed (Phases 3–16) is single-UE. Phase 17 adds a 13-study,
+145-run multi-UE simulation campaign using ns-3.46 + 5G-LENA v4.1.1.
+
+- **11 studies valid, 2 documented limitations (S6 CA, S12 frequency).**
+- Testbed-matched: 3.5 GHz, 20 MHz, 30 kHz SCS, TDD 6DL+4UL.
+- Scale: 30–150 UEs.
+- Full report: `docs/phase17/phase-17-report.md`
+- Figures: `figures/phase17/` (10 PDFs)
+- Scripts: `scripts/phase17/`
+- Patches applied to 5G-LENA: `patches/phase17/`
+
+Strongest findings:
+1. **TDD pattern (S13):** 8DL+2UL gives 46 ms; 2DL+8UL gives 596 ms.
+   12× latency penalty for a mismatched pattern.
+2. **Numerology (S10):** 15 kHz SCS gives 428 ms; 30/60/120 kHz give
+   3.8/1.9/1.1 ms. Confirms the testbed's 30 kHz choice.
+3. **XR overload (S9):** heavy config → 0 bytes received. Simulation
+   counterpart to the testbed's ~8.6 Mbps ceiling (Phase 8).

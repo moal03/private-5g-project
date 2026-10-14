@@ -1,0 +1,7 @@
+run,mean_flow_delay_ms,mean_flow_throughput_mbps
+s5_sc0_seed1,3.05277,24.196049
+s5_sc0_seed2,3.067073,24.196049
+s5_sc0_seed3,3.067073,24.196049
+s5_sc1_seed1,2.565092,17.214086
+s5_sc1_seed2,2.56688,17.214086
+s5_sc1_seed3,2.56688,17.214086

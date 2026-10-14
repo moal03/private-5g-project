@@ -1,0 +1,10 @@
+run,mean_flow_delay_ms,mean_flow_throughput_mbps
+s8_heavy_seed1,7.582681,10.2144
+s8_heavy_seed2,7.674302,10.2144
+s8_heavy_seed3,7.687879,10.222277
+s8_light_seed1,7.582513,10.2144
+s8_light_seed2,7.627038,10.2144
+s8_light_seed3,7.634694,10.220308
+s8_none_seed1,7.462565,10.216369
+s8_none_seed2,7.378455,10.216369
+s8_none_seed3,7.459427,10.218338

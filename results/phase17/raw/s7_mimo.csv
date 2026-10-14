@@ -1,0 +1,7 @@
+run,mean_flow_delay_ms,mean_flow_throughput_mbps
+s7_mimo_seed1,3.564283,0.274133
+s7_mimo_seed2,3.564283,0.274133
+s7_mimo_seed3,3.564283,0.274133
+s7_siso_seed1,3.767853,0.274133
+s7_siso_seed2,3.564283,0.274133
+s7_siso_seed3,3.699996,0.274133

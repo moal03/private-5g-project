@@ -1,0 +1,7 @@
+run,mean_flow_delay_ms,mean_flow_throughput_mbps
+s6_dual_seed1,0.542598,102.373744
+s6_dual_seed2,0.542598,102.373744
+s6_dual_seed3,0.542598,102.373744
+s6_single_seed1,0.542598,102.373744
+s6_single_seed2,0.542598,102.373744
+s6_single_seed3,0.542598,102.373744
