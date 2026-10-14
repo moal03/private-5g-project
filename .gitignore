@@ -18,3 +18,10 @@ __pycache__/
 .env.*
 secrets/
 private-keys/
+
+# Phase 17 — large per-run CSVs (regenerable from raw ns-3 trace files)
+results/phase17/raw/s2_packets.csv
+results/phase17/raw/s2_qos_per_flow.csv
+
+# Phase 17 — duplicate of results/phase17/master_summary.csv
+results/phase17/raw/master_summary.csv
